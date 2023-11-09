@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<!-- saved from url=(0026)https://vsg-marketing.com/ -->
+<html lang="en"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>VSG Marketing Ltd</title>
+  <link rel="icon" type="image/x-icon" href="https://vsg-marketing.com/icon.png" sizes="32x32">
+  <link rel="stylesheet" href="./VSG Marketing Ltd_files/style.css">
+  <meta http-equiv="refresh" content="0; url=index.html">
+</head>
+
+<body>
+    <nav>
+        <span class="navMenu">
+          <div class="logo">
+            <img src="./VSG Marketing Ltd_files/logo.png" alt="VSG Marketing Ltd" onclick="loadHomePage()">
+          </div>
+
+          <span class="menuNav">
+            <div class="navB" onclick="loadHomePage()">Home</div>
+            <div class="navB">Contact Us</div>
+          </span>   
+        </span> 
+    </nav>
+
+    <main class="content">
+      <div class="cline">
+          <img src="./VSG Marketing Ltd_files/Dream D6/black.webp" alt="VSG Marketing Ltd" id="dream_d6_image" width="auto" height="720px">
+        <div class="clineCont">
+          <h1 id="displayName">Dream D6</h1>
+          <span class="line"></span>
+          <div class="colorPickerElement">
+            <div>
+              <h3>Color: <span id="dream_d6_name11">NAME</span></h3>
+            </div>
+
+            <div class="colorPicker">
+              <span tabindex="0" class="dot4" style="background-color: rgb(0, 0, 0);border-color:rgb(0, 0, 0);" onclick="changeImage('./VSG Marketing Ltd_files/name/black.webp', 'Black', '#dream_d6_image', 'dream_d6_name11')" id="Black2"></span>
+              <span tabindex="0" class="dot4" style="background-color: rgb(236, 236, 236);border-color:rgb(236, 236, 236);" onclick="changeImage('./VSG Marketing Ltd_files/name/white.webp', 'White', '#dream_d6_image', 'dream_d6_name11')" id="Black2"></span>
+            </div>  
+  
+          </div>
+  
+          <div class="contElement">
+            <iframe allowtransparency="true" style="background-color: #FFFFFF;" src="./VSG Marketing Ltd_files/d.txt" id="descL" class="iframeg"><p>uhdu</p></iframe>
+          </div>
+  
+          <div class="contElement">
+            <h3>Pricing</h3>
+            <h2 style="font-size: 24;font-weight: 600;color: green;">Rs 20,000</h2>
+            <div class="buyBtn" tabindex="0" onclick="loadProductPage()"><span>Discover!</span></div>
+          </div>
+        </div>
+      </div>
+    </main>
+
+    <script>
+      const dotClasses = ['dot', 'dot1', 'dot2', 'dot3', 'dot4'];
+
+      function changeImage(text, idBtn, idImg, idText) {
+        document.querySelector(idImg).src = text;
+        document.getElementById(idText).textContent = idBtn;
+      }
+
+      for (const dotClass of dotClasses) {
+        const dotElements = document.querySelectorAll('.' + dotClass);
+
+        for (const dotElement of dotElements) {
+          dotElement.addEventListener('focus', () => {
+            dotElement.classList.add('focus');
+
+            for (const dots of dotElements){
+              if (dots != dotElement && dots.id == dotElement.id){
+                dots.classList.remove('focus');
+              }
+            }
+          });
+        }
+      }
+
+      const params = new URLSearchParams(window.location.search);
+      const productId = params.get('product_name');
+
+      const name = productId;
+
+      const descPath = './VSG Marketing Ltd_files/' + name + '/' + name + '.txt';
+
+      document.getElementById('displayName').innerHTML = name;
+
+      document.getElementById('dream_d6_image').src = "./VSG Marketing Ltd_files/" + name + "/black.webp";
+
+      document.getElementById('descL').src =  "./VSG Marketing Ltd_files/" + name + "/" + name + ".txt";
+      document.getElementById('descL').style.backgroundColor = 'white';
+
+      function loadHomePage(){
+        window.location.href = 'VSG Marketing Ltd.html';
+      }
+
+      function changeImage(text, idBtn, idImg, idText) {
+       document.querySelector(idImg).src = text.replace('name', name);
+       document.getElementById(idText).textContent = idBtn;
+      }
+    </script>
+
+  <footer class="footer">
+    <p>© 2023 VSG Marketing. All rights reserved.</p>
+  </footer>
+
+</body></html>
