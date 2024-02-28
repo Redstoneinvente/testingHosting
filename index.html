@@ -1,71 +1,92 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-  <title>Reds Tech Review</title>
-  <link rel="stylesheet" href="Reds Tech Review_files/style.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Event Page</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f4;
+        }
+
+        header {
+            background-color: #333;
+            color: white;
+            text-align: center;
+            padding: 1em;
+        }
+
+        main {
+            max-width: 800px;
+            margin: 20px auto;
+            padding: 20px;
+            background-color: white;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            border-radius: 5px;
+        }
+
+        h1, h2, h3 {
+            color: #333;
+        }
+
+        p {
+            line-height: 1.6;
+            color: #666;
+        }
+
+        .event-details {
+            margin-top: 20px;
+        }
+
+        .event-details h2 {
+            color: #333;
+            border-bottom: 2px solid #ccc;
+            padding-bottom: 5px;
+        }
+
+        .event-details p {
+            margin-top: 10px;
+        }
+
+        .button {
+            display: inline-block;
+            padding: 10px 20px;
+            background-color: #333;
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+        }
+
+        .button:hover {
+            background-color: #555;
+        }
+    </style>
 </head>
 <body>
-  <header>
-    <img src="logo.svg" alt="Reds Tech Review logo">
-    <nav>
-      <a href="#">Home</a>
-      <a href="#">Reviews</a>
-      <a href="#">News</a>
-      <a href="#">About</a>
-    </nav>
-  </header>
-  <main>
-    <h1>Welcome to Reds Tech Review 2023!</h1>
-    <p>We're here to provide you with honest and unbiased tech reviews, so you can make informed decisions about the products you buy.</p>
+    <header>
+        <h1>Event Name</h1>
+        <p>Join us for an exciting event!</p>
+    </header>
 
-    <section id="featured-reviews">
-      <h2>Featured Reviews</h2>
+    <main>
+        <h2>About the Event</h2>
+        <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed euismod eu ligula ac commodo. Nulla facilisi. Nulla facilisi. Phasellus vel tortor eget nulla ullamcorper aliquam vel vitae justo.</p>
 
-      <div class="review">
-        <img src="product-image-1.jpg" alt="Product image 1">
-        <h3>Google Pixel 7 Pro</h3>
-        <p>The Google Pixel 7 Pro is one of the best smartphones on the market. It has a great camera, a long-lasting battery, and a clean and simple software experience. However, it is a bit expensive.</p>
-        <a href="#">Read More</a>
-      </div>
+        <div class="event-details">
+            <h2>Event Details</h2>
+            <p><strong>Date:</strong> June 1, 2023</p>
+            <p><strong>Time:</strong> 6:00 PM - 9:00 PM</p>
+            <p><strong>Location:</strong> Event Venue, City</p>
+        </div>
 
-      <div class="review">
-        <img src="product-image-2.jpg" alt="Product image 2">
-        <h3>Apple iPhone 14 Pro Max</h3>
-        <p>The Apple iPhone 14 Pro Max is another great smartphone. It has a powerful processor, a gorgeous display, and a new camera system that takes amazing photos and videos. However, it is even more expensive than the Pixel 7 Pro.</p>
-        <a href="#">Read More</a>
-      </div>
-
-      <div class="review">
-        <img src="product-image-3.jpg" alt="Product image 3">
-        <h3>Samsung Galaxy S23 Ultra</h3>
-        <p>The Samsung Galaxy S23 Ultra is a great all-around smartphone. It has a large and beautiful display, a powerful processor, and a versatile camera system. However, it is also one of the largest and heaviest smartphones on the market.</p>
-        <a href="#">Read More</a>
-      </div>
-    </section>
-
-    <section id="latest-news">
-      <h2>Latest News</h2>
-
-      <div class="article">
-        <h3>Google announces new Pixel Watch</h3>
-        <p>Google has announced a new Pixel Watch, which is scheduled to be released in the fall of 2023. The Pixel Watch is a smartwatch that runs Wear OS and features a sleek and stylish design. It will also be compatible with other Google products, such as the Pixel Buds Pro and the Pixel 7 Pro.</p>
-        <a href="#">Read More</a>
-      </div>
-
-      <div class="article">
-        <h3>Apple releases new iOS 16 update</h3>
-        <p>Apple has released a new iOS 16 update for the iPhone. The update includes a number of new features, such as a customizable lock screen, new notification widgets, and a new Live Text feature that allows you to extract text from images and videos.</p>
-        <a href="#">Read More</a>
-      </div>
-
-      <div class="article">
-        <h3>Samsung unveils new Galaxy Z Fold 4 and Galaxy Z Flip 4 foldable phones</h3>
-        <p>Samsung has unveiled its new Galaxy Z Fold 4 and Galaxy Z Flip 4 foldable phones. The phones feature a number of improvements over their predecessors, such as more durable displays, more powerful processors, and better cameras.</p>
-        <a href="#">Read More</a>
-      </div>
-    </section>
-  </main>
-  <footer>
-    <p>&copy; 2023 Reds Tech Review</p>
-  </footer>
-</body></html>
+        <div class="event-details">
+            <h2>Registration</h2>
+            <p>Register now to secure your spot!</p>
+            <a href="#" class="button">Register</a>
+        </div>
+    </main>
+</body>
+</html>
