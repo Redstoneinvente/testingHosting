@@ -1,0 +1,674 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title> Landing Page</title>
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons"
+    rel="stylesheet">
+    <script src="https://kit.fontawesome.com/67c7b6defc.js" crossorigin="anonymous"></script>
+
+    <style> 
+     body {
+    font-family: 'Arial', sans-serif;
+    margin: 0;
+    padding: 0;
+    padding-left: 10px !important;
+    background-color: var(--background);
+    overflow-x: hidden; /* Hide horizontal overflow */
+    }
+
+  header {
+    background-color: var(--surface-container);
+    color: var(--on-surface);
+    padding: 20px;
+    text-align: center;
+  }
+
+  header img {
+    max-width: 100px;
+    height: auto;
+  }
+
+  main {
+    max-width: 800px;
+
+    margin-left: 27vw !important;
+    margin: 20px auto;
+
+    padding: 20px;
+    background-color: var(--surface);
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    border-radius: 20px;
+
+    transition: all var(--transitionSpeed) linear;
+    -webkit-transition: all var(--transitionSpeed) linear;
+    -moz-transition: all var(--transitionSpeed) linear;
+    -o-transition: all var(--transitionSpeed) linear;
+  }
+
+  .mainSide {
+    max-width: 800px !important;
+
+    margin-left: 2vw !important;
+
+    padding: 20px;
+    background-color: var(--surface);
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    border-radius: 20px;
+
+    transition: all var(--transitionSpeed) linear;
+    -webkit-transition: all var(--transitionSpeed) linear;
+    -moz-transition: all var(--transitionSpeed) linear;
+    -o-transition: all var(--transitionSpeed) linear;
+  }
+
+  .sidePanelHide {
+  position: fixed;
+  max-width: auto;
+  margin-right: -1000px; /* Adjust the width of your sidePanel */
+
+  left: auto;
+  right: -200px;
+
+  overflow: hidden;
+  padding: 20px;
+  background-color: var(--surface);
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  border-radius: 20px;
+  transition: all var(--transitionSpeed) linear;
+}
+
+.sidePanel {
+  position: fixed;
+  max-width: auto; /* Adjust the width of your sidePanel */
+  margin-right: 0;
+
+  left: auto;
+  right: 20px !important;
+
+  padding: 20px;
+  background-color: var(--surface);
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  border-radius: 20px;
+  transition: all var(--transitionSpeed) linear;
+}
+
+  .hero img {
+    width: 100%;
+    height: auto;
+    margin-bottom: 20px;
+    border-radius: 20px;
+  }
+
+  .im {
+    width: 100%;
+    height: auto;
+    margin-bottom: 20px;
+    border-radius: 20px;
+    background-image: url("https://static.vecteezy.com/system/resources/thumbnails/002/099/717/small_2x/mountain-beautiful-landscape-background-design-illustration-free-vector.jpg");
+
+    transition: all ease-in-out 250ms;
+  }
+
+  .port img {
+    display: block; 
+    margin-left: auto; 
+    margin-right: auto;
+  }
+
+  .port img {
+    width: 300px; 
+    height: 300px; 
+    object-fit: cover;
+  }
+
+  h1, h2, h3, h4 {
+    color: var(--on-surface);
+  }
+
+  .info {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 20px;
+    margin-left: 1vh;
+  }
+
+  .info-item:last-child {
+    border-right: none; /* Remove the border from the last child */
+  }
+
+  .info-item {
+    flex: 1;
+    border-right: var(--outline-variant) 1px solid;
+
+    text-align: center;
+  }
+
+  .speakers {
+    margin-bottom: 20px;
+  }
+
+  .speaker {
+    display: flex;
+    align-items: center;
+    margin-bottom: 20px;
+    color: var(--on-surface);
+    /*background-color: mix(var(--surface-container-high), var(--surface-tint), var(--tint-opacity));*/
+    background-color: color-mix( in srgb, var(--surface-container-high) var(--tint-opacity), var(--surface-tint));
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    border-radius: 5px;
+  }
+
+  .speaker img {
+    border-radius: 50%;
+    margin-right: 20px;
+    margin-left: 20px;
+    max-width: 80px;
+    height: 80px;
+    object-fit: cover;
+  }
+
+  .speakersLearnMore {
+    border-radius: 50%;
+    max-width: 80px;
+    display: flex;
+    align-items: center;
+    height: 80px;
+    margin-left: auto;
+    margin-right: 20px;
+  }
+
+  .cta {
+    text-align: center;
+    padding: auto;
+  }
+
+  .cta a {
+    display: inline-block;
+    padding: 10px 20px;
+    background-color: var(--primary);
+    color: var(--on-primary);
+    text-decoration: none;
+    border-radius: 20px;
+
+    width: 95%;
+  }
+
+  .cta:hover {
+    border-radius: 20px;
+            background-color: var(--secondary) !important;
+            box-shadow: var(--shadow) 0px 0px 2px 1px;
+
+            transition: all 100ms linear;
+        }
+
+  .speakersPP img {
+    display: flex;
+    padding: auto;
+  }
+
+  .session-button {
+      display: inline-block;
+      padding: 10px 20px;
+      background-color: var(--secondary-container); /* Adjust color as needed */
+      color: var(--on-secondary-container);
+      text-decoration: none;
+      border-radius: 20px;
+      margin-right: 10px;
+      margin-bottom: 10px;
+      font-weight: 600 !important;
+      
+      -webkit-user-select: none; /* Safari */
+  -moz-user-select: none; /* Firefox */
+  -ms-user-select: none; /* Internet Explorer/Edge */
+  user-select: none;
+    }
+
+    .session-button:hover {
+            background-color: var(--on-secondary-container-a); /* Adjust color as needed */
+            box-shadow: var(--shadow) 0px 0px 2px 1px;
+            color: var(--on-secondary-container);
+
+            transition: all 100ms linear;
+        }
+
+    .material-icons { 
+        color: var(--on-surface-variant); 
+        -webkit-user-select: none; /* Safari */
+  -moz-user-select: none; /* Firefox */
+  -ms-user-select: none; /* Internet Explorer/Edge */
+  user-select: none;
+    }
+    .material-icons.md-48 { font-size: 20px; }
+    .material-icons.md-var { font-size: var(--iconsSize); }
+    .material-icons.md-readMore { font-size: var(--readMoreSize); }
+
+  footer {
+    text-align: center;
+    padding: 10px;
+    background-color: var(--surface-container); /* Keeping the original color for footer background */
+    color: var(--on-surface);
+    position: relative;
+    bottom: 0;
+    width: 100%;
+  }
+
+  .carousel-container {
+    display: flex;
+    width: 800px;
+    height: 400px;
+    object-fit: cover;
+    overflow: hidden;
+
+    filter: opacity(1);
+    }
+
+    .carousel-slide {
+    min-width: 100%;
+    transition: transform 0.5s ease-in-out;
+    }
+  
+    .headerImg img {
+        width: 800px;
+        height: 400px;
+        object-fit: cover;
+
+    }
+    
+    .expandable-text {
+        overflow: hidden;
+        max-height: 100px; /* Set the initial height or any value that suits your design */
+        cursor: pointer;
+        transition: all 700ms linear;
+
+    }
+
+    .expanded {
+        max-height: fit-content !important; /* Set this to 'none' to allow full expansion */
+        transition: all 700ms linear;
+    }
+
+    .social-icons {
+    display: flex;
+    justify-content: center;  /* Center the content horizontally */
+    align-items: center;
+    gap: 50px;
+}
+
+    .social-icon {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 24px;
+        border-radius: 50%;
+        text-decoration: none;
+        color: var(--on-surface-variant-a);
+        transition: color 0.2s ease-in-out;
+    }
+
+    .social-icon:hover {
+        color: var(--primary);
+    }
+
+
+  :root {
+    --primary: ;
+    --surface-tint: ;
+    --on-primary: ;
+    --primary-container: ;
+    --on-primary-container: ;
+    --secondary: ;
+    --on-secondary: ;
+    --secondary-container: ;
+    --on-secondary-container: ;
+    --on-secondary-container-a: ;
+    --tertiary: ;
+    --on-tertiary: ;
+    --tertiary-container: ;
+    --on-tertiary-container: ;
+    --error: ;
+    --on-error: ;
+    --error-container: ;
+    --on-error-container: ;
+    --background: ;
+    --on-background: ;
+    --surface: ;
+    --on-surface: ;
+    --surface-variant: ;
+    --on-surface-variant: ;
+    --on-surface-variant-a: ;
+    --outline: ;
+    --outline-variant: ;
+    --shadow: ;
+    --scrim: ;
+    --inverse-surface: ;
+    --inverse-on-surface: ;
+    --inverse-primary: ;
+    --primary-fixed: ;
+    --on-primary-fixed: ;
+    --primary-fixed-dim: ;
+    --on-primary-fixed-variant: ;
+    --secondary-fixed: ;
+    --on-secondary-fixed: ;
+    --secondary-fixed-dim: ;
+    --on-secondary-fixed-variant: ;
+    --tertiary-fixed: ;
+    --on-tertiary-fixed: ;
+    --tertiary-fixed-dim: ;
+    --on-tertiary-fixed-variant: ;
+    --surface-dim: ;
+    --surface-bright: ;
+    --surface-container-lowest: ;
+    --surface-container-low: ;
+    --surface-container: ;
+    --surface-container-high: ;
+    --surface-container-highest: ;
+      --tint-opacity: 87%;
+      --iconsSize: 10px;
+      --readMoreSize: 30px;
+      --transitionSpeed: 100ms;
+    }
+  </style>
+
+  <script>
+    var isMainAreaSlided = false;
+    var speakers = false;
+    var main = false;
+
+    var mainEventImg = "https://firebasestorage.googleapis.com/v0/b/fscproject-c108d.appspot.com/o/Screenshot 2023-11-08 at 17.22.12.png?alt=media";
+
+    var lastId = "";
+
+    var sessionsImgs = [
+        
+    ];
+
+    var profileImgs = [
+        
+    ];
+
+    var sessionNames = [
+        
+    ];
+
+    var speakerNames = [
+        
+    ];
+
+    var sessionDesc = [
+        
+    ]
+
+    var speakerDesc = [
+        
+    ]
+
+    const arrays = [
+        
+    ];
+
+    var imgsSpawned = [];
+
+    function toggleMainClass(idName, index) {
+    var mainElement = document.getElementById("mainElement"); // Replace with your actual ID
+    var sidePanel = document.getElementById("side"); // Replace with your actual ID
+    var sidePanelSp = document.getElementById("sideSpeak"); // Replace with your actual ID
+
+    var targetImage = document.getElementById("sessionImg");
+    var targetName = document.getElementById("sessionName");
+    var targetDesc = document.getElementById("sessionDesc");
+
+    targetImage.src = sessionsImgs[index];
+    targetName.innerText = sessionNames[index]; 
+    targetDesc.innerText = sessionDesc[index];
+
+    if (isMainAreaSlided) {
+        if(!speakers){
+            if(idName == lastId) {
+                mainElement.classList.toggle("mainSide");
+
+                sidePanel.classList.add("sidePanelHide");
+                sidePanel.classList.remove("sidePanel");
+
+                isMainAreaSlided = false;
+            }
+            else{
+                //lastId = idName;
+
+                //Replace Contents
+                isMainAreaSlided = true;
+                main = false;
+            }
+        }
+        else{
+            sidePanelSp.classList.add("sidePanelHide");
+            sidePanelSp.classList.remove("sidePanel");
+
+            sidePanel.classList.add("sidePanel");
+            sidePanel.classList.remove("sidePanelHide");
+
+            isMainAreaSlided = true;
+        }
+
+        speakers = false;
+
+        // Main area is already slided, hide sidePanel
+    } else {
+        // Main area is not slided, toggle mainSide and show sidePanel
+        if(!speakers){
+            mainElement.classList.toggle("mainSide");
+
+            isMainAreaSlided = true;
+        }
+        else{
+            sidePanelSp.classList.add("sidePanelHide");
+            sidePanelSp.classList.remove("sidePanel");
+
+            isMainAreaSlided = false;
+        }
+
+        speakers = false;
+
+        if (sidePanel.classList.contains("sidePanelHide")) {
+        sidePanel.classList.remove("sidePanelHide");
+        sidePanel.classList.add("sidePanel");
+        }
+    }
+
+    const targetArray = arrays[index];
+
+    imgsSpawned.forEach(element => {
+        element.remove();
+    });
+
+    imgsSpawned = [];
+
+    // Loop through elements in the array and spawn images
+    targetArray.forEach(value => {
+        const img = document.createElement('img');
+        img.src = value; // Assuming the array contains image URLs
+        img.alt = 'Description'; // You can customize the alt text
+        
+        img.style.width = '50px';
+        img.style.height = '50px';
+        img.style.borderRadius = '50%';
+
+        img.style.padding = '6px';
+
+        imgsSpawned.push(img);
+        document.getElementById('speakersPP').appendChild(img); // Append the image to the body (you can change the target element)
+    });
+
+    lastId = idName;
+    main = !main;
+    }
+
+    function toggleSpeakers(idName, index) {
+    var mainElement = document.getElementById("mainElement"); // Replace with your actual ID
+    var sidePanel = document.getElementById("sideSpeak"); // Replace with your actual ID
+    var sidePanelM = document.getElementById("side"); // Replace with your actual ID
+
+    var targetImage = document.getElementById("profilImg");
+    var targetNameS = document.getElementById("speakerName");
+    var targetDescS = document.getElementById("speakerDesc");
+
+    targetImage.src = profileImgs[index];
+    targetNameS.innerText = speakerNames[index];
+    targetDescS.innerText = speakerDesc[index];
+
+    if (isMainAreaSlided) {    
+        if(!main){
+            if(idName == lastId) {
+                mainElement.classList.toggle("mainSide");
+
+                sidePanel.classList.add("sidePanelHide");
+                sidePanel.classList.remove("sidePanel");
+
+                isMainAreaSlided = false;
+                speakers = false;
+            }
+            else{
+                lastId = idName;
+
+                //Replace Contents
+                isMainAreaSlided = true;
+                speakers = true;
+            }
+        }
+        else{
+            sidePanelM.classList.add("sidePanelHide");
+            sidePanelM.classList.remove("sidePanel");
+
+            sidePanel.classList.add("sidePanel");
+            sidePanel.classList.remove("sidePanelHide");
+
+            isMainAreaSlided = true;
+            speakers = true;
+        }
+
+        main = false;
+        // Main area is already slided, hide sidePanel
+    } else {
+        // Main area is not slided, toggle mainSide and show sidePanel
+        if(!main){
+            mainElement.classList.toggle("mainSide");
+
+            isMainAreaSlided = true;
+            speakers = true;
+        }
+        else{
+            sidePanelM.classList.add("sidePanelHide");
+            sidePanelM.classList.remove("sidePanel");
+
+            isMainAreaSlided = false;
+            speakers = false;
+        }
+
+        main = false;
+
+        if (sidePanel.classList.contains("sidePanelHide")) {
+        sidePanel.classList.remove("sidePanelHide");
+        sidePanel.classList.add("sidePanel");
+        }
+    }
+    
+    lastId = idName;
+    //speakers = !speakers;
+    }
+
+    document.addEventListener("DOMContentLoaded", function () {
+        const carouselContainer = document.querySelector('.carousel-container');
+        var imgToSwitch = document.getElementById("mainBg");
+        //var imgToSwitch = document.getElementById("im");
+        let currentIndex = 0;
+
+        function showSlide(index) {
+            //const offset = -index * 100;
+            //carouselContainer.style.transform = `translateX(${offset}%)`;
+            currentIndex = index > sessionsImgs.length - 1 ? 0 : index + 1;
+        }
+
+        function nextSlide() {
+            //currentIndex = (currentIndex + 1) % document.querySelectorAll('.carousel-slide').length;
+            imgToSwitch.src = currentIndex == sessionsImgs.length ? mainEventImg : sessionsImgs[currentIndex]; 
+
+            showSlide(currentIndex);
+            trans();
+
+        }
+
+        function prevSlide() {
+            //currentIndex = (currentIndex - 1 + document.querySelectorAll('.carousel-slide').length) % document.querySelectorAll('.carousel-slide').length;
+            imgToSwitch.src = currentIndex == sessionsImgs.length ? mainEventImg : sessionsImgs[currentIndex]; 
+            showSlide(currentIndex);
+            trans();
+        }
+
+        setInterval(nextSlide, 3000); // Auto-advance every 3 seconds
+    });
+
+    function toggleExpand() {
+        var expandableText = document.querySelector('.expandable-text');
+        expandableText.classList.toggle('expanded');
+    }
+  </script>
+
+  </head>
+  <body>
+    <header>
+      <img src="" alt="Logo Description"> 
+      <h1>Test Event</h1>
+      <div class="social-icons">
+        <a href="" class="social-icon"><i class="fa-solid fa-globe"></i></a>
+        <a href="" class="social-icon"><i class="fa-brands fa-x-twitter"></i></a>
+        <a href="" class="social-icon"><i class="fa-brands fa-linkedin"></i></a>
+        <!-- Add more social icons as needed -->
+        </div>    
+    </header>
+    <div class="info">
+        <main id="mainElement" class="main">
+            <div class="hero">
+              <div class="carousel-container">
+                <img src="https://firebasestorage.googleapis.com/v0/b/fscproject-c108d.appspot.com/o/Screenshot 2023-11-08 at 17.22.12.png?alt=media" alt="Hero Image Description" id="mainBg">
+            </div>
+              <h1>Event Test</h1>
+              <p>Testing</p>
+            </div>
+            <div class="info">
+              
+            </div>
+            <div class="speakers">
+              <h2>Meet the Speakers</h2>
+              
+              
+            </div>
+            <div class="cta">
+              <a href="#">Register Now</a>
+            </div>
+          </main>
+
+          <main id="side" class="sidePanelHide">
+            <div class="hero">
+                <div class="headerImg">
+                <img src="https://firebasestorage.googleapis.com/v0/b/fscproject-c108d.appspot.com/o/Screenshot 2023-11-08 at 17.22.12.png?alt=media" alt="Hero Image Description" id="sessionImg"></div>
+                <h1 id="sessionName">Session 1</h1>
+                <p id="sessionDesc">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</p>
+                <h2>Speakers</h2>
+                <div id="speakersPP"></div>
+              </div>
+          </main>
+
+          <main id="sideSpeak" class="sidePanelHide">
+            <div class="hero">
+                <div class="port">
+                    <img src="" alt="Hero Image Description" id="profilImg">
+                </div>
+                <h1 id="speakerName">Speaker 1</h1>
+                <p id="speakerDesc">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</p>
+              </div>
+          </main>
+    </div>
+    <footer>
+      <p>© </p>
+    </footer>
+  </body></html>
