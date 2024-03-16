@@ -1,0 +1,551 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Embedded Zoom Meeting</title>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
+    <style>
+        table {
+            border-collapse: collapse;
+            width: 50%;
+            margin: 20px auto;
+        }
+
+        th, td {
+            border: 1px solid #ddd;
+            padding: 10px;
+            text-align: center;
+        }
+
+        .main-layout {
+            display: inline-flex;
+            height: 100%;
+            width: 100%;
+
+            overflow: hidden;
+        }
+
+        .main-layout-hidden {
+            display: none;
+            height: 100%;
+            width: 100%;
+
+            overflow: hidden;
+        }
+
+        .material-symbols-outlined {
+            color: var(--on-primary);
+
+            margin: auto;
+
+            font-variation-settings:
+            'FILL' 0,
+            'wght' 400,
+            'GRAD' 0,
+            'opsz' 48
+        }
+
+        .zoom-container {
+            position: relative;
+            overflow: hidden;
+            width: 60%;
+            height: 60vh;
+            /* padding-top: auto;  */
+            display: block; /* Initially hide the Zoom container */
+            background-color: var(--surface-container);
+        }
+
+        .zoom-container-hidden {
+            position: relative;
+            overflow: hidden;
+            width: 100%;
+            padding-top: 33.75%; 
+            display: none; /* Initially hide the Zoom container */
+        }
+
+        .zoom-container iframe {
+            position: absolute;
+            top: 0;
+            left: 0;
+            bottom: 0;
+            right: 0;
+            width: 100%;
+            height: 100%;
+        }
+
+        .chat-container {
+            position: relative;
+            overflow: hidden;
+
+            width: 38%;
+            height: 92vh;
+
+            margin-left: 2%;
+
+            display: block;
+            background-color: var(--surface-container);
+            /* background-image: url('https://lottie.host/embed/6d9f533f-0c5b-44a8-a2b2-8cc6225c6ad1/FtV8TOZmCg.json'); */
+            /* display: flex; */
+            align-items:flex-start;
+            
+
+            .chat-box {
+                margin: 2%;
+                width: 90%;
+                height: 5%;
+
+                margin-right: 0%;
+
+                border: 1px solid;
+                border-radius: 5px;
+                border-color: var(--outline-variant);
+
+                background-color: transparent;
+
+                font-size: medium;
+                color: var(--primary);
+            }
+
+            input[type="text"] { 
+                padding-left: 10px;  /* Example: 10 pixels of padding on all sides */
+                padding-right: 10px;  /* Example: 10 pixels of padding on all sides */
+            }
+
+            .chat-send-btn {
+                width: 2.85vw;
+                height: 2.85vw;
+
+                margin: 2%;
+                margin-left: 1%;
+
+                display: flex;
+                align-items: center;
+
+                border-radius: 30%;
+
+                background-color: var(--primary);
+            }
+
+            h1 {
+                margin-left: 5%;
+            }
+
+            table {
+                margin-left: 5%;
+                margin-right: 5%;
+                width: 90%;
+            }
+        }
+
+        /* Overlay to darken the background */
+        .lottie-overlay {
+        position: fixed;      /* Stay in place */
+        top: 0;
+        left: 0;
+        width: 100%;          /* Cover the whole screen */
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.466); /* Black with 70% opacity */
+        z-index: 1000;        /* Ensure it's on top of other elements */
+        }
+
+        /* The Lottie player itself */
+        lottie-player {
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%); /* Center the animation */
+        width: 100vw;   /* Full viewport width */
+        height: 100vh;  /* Full viewport height */
+        z-index: 1001;  /* On top of the overlay */
+        }
+
+        .error-message {
+            position: absolute;
+            bottom: 35%;   /* Adjust as needed */
+            left: 50%;
+            transform: translateX(-50%); 
+            text-align: center;
+            font-size: 36px;  /* Adjust as needed */
+            color: white;
+        }
+
+        /* Prevent interactions with anything under the overlay*/
+        .lottie-overlay,
+        .lottie-overlay * { 
+        pointer-events: none; 
+        }
+
+        :root {
+          --primary: rgb(101, 85, 143);
+          --surface-tint: rgb(101 85 143);
+          --on-primary: rgb(255 255 255);
+          --primary-container: rgb(233 221 255);
+          --on-primary-container: rgb(32 16 71);
+          --secondary: rgb(98 91 113);
+          --on-secondary: rgb(255 255 255);
+          --secondary-container: rgb(232 222 248);
+          --on-secondary-container: rgb(30 25 43);
+          --on-secondary-container-a: rgba(30 25 43 0.08);
+          --tertiary: rgb(126 82 96);
+          --on-tertiary: rgb(255 255 255);
+          --tertiary-container: rgb(255 217 227);
+          --on-tertiary-container: rgb(49 16 29);
+          --error: rgb(186 26 26);
+          --on-error: rgb(255 255 255);
+          --error-container: rgb(255 218 214);
+          --on-error-container: rgb(65 0 2);
+          --background: rgb(253 247 255);
+          --on-background: rgb(29 27 32);
+          --surface: rgb(253 247 255);
+          --on-surface: rgb(29 27 32);
+          --surface-variant: rgb(231 224 235);
+          --on-surface-variant: rgb(73 69 78);
+          --on-surface-variant-a: rgba(73 69 78 0.08);
+          --outline: rgb(122 117 127);
+          --outline-variant: rgb(202 196 207);
+          --shadow: rgb(0 0 0);
+          --scrim: rgb(0 0 0);
+          --inverse-surface: rgb(50 47 53);
+          --inverse-on-surface: rgb(245 239 247);
+          --inverse-primary: rgb(207 189 254);
+          --primary-fixed: rgb(233 221 255);
+          --on-primary-fixed: rgb(32 16 71);
+          --primary-fixed-dim: rgb(207 189 254);
+          --on-primary-fixed-variant: rgb(77 61 117);
+          --secondary-fixed: rgb(232 222 248);
+          --on-secondary-fixed: rgb(30 25 43);
+          --secondary-fixed-dim: rgb(203 194 219);
+          --on-secondary-fixed-variant: rgb(74 68 88);
+          --tertiary-fixed: rgb(255 217 227);
+          --on-tertiary-fixed: rgb(49 16 29);
+          --tertiary-fixed-dim: rgb(239 184 200);
+          --on-tertiary-fixed-variant: rgb(99 59 72);
+          --surface-dim: rgb(222 216 224);
+          --surface-bright: rgb(253 247 255);
+          --surface-container-lowest: rgb(255 255 255);
+          --surface-container-low: rgb(248 242 250);
+          --surface-container: rgb(242 236 244);
+          --surface-container-high: rgb(236 230 238);
+          --surface-container-highest: rgb(230 224 233);
+        --tint-opacity: 87%;
+        --iconsSize: 10px;
+        --readMoreSize: 30px;
+        --transitionSpeed: 100ms;
+      }
+    </style>
+</head>
+<body>
+    <div class="lottie-overlay" id="lottieoverlay">
+        <script src="https://unpkg.com/@lottiefiles/lottie-player@latest/dist/lottie-player.js"></script>
+        <lottie-player src="https://lottie.host/89f9c266-0467-44db-abd0-0939bbbf6a0d/ww8nnrDH3q.json" background="##fff" speed="1" style="width: 300px; height: 300px" loop autoplay direction="1" mode="normal" id="player">
+        </lottie-player>
+    </div>
+
+    <div class="lottie-overlay" id="errorLottie" style="display: none;">
+        <script src="https://unpkg.com/@lottiefiles/lottie-player@latest/dist/lottie-player.js"></script>
+        <div class="error-message">User not registered for this event.</div>
+        <lottie-player src="https://lottie.host/9f4c43d8-d8e6-4bde-b8e5-2a2c3a159153/7xEQWGcjWF.json" background="##fff" speed="1" style="width: 300px; height: 300px" autoplay direction="1" mode="normal" id="errorPlayer">
+        </lottie-player>
+    </div>
+
+    <h1 id="s">Event Title</h1>
+
+    <form id="login-form"> 
+        <input type="email" id="email" name="email" placeholder="Email" required>
+        <!-- <input type="password" id="password" name="password" placeholder="Password" required> -->
+        <button type="submit">Login</button>
+    </form>
+
+    <div class="main-layout-hidden" id="mainLayout">
+        <div class="zoom-container" id="zoom">
+            <iframe src="https://success.zoom.us/wc/join/4853028570?pwd=bUd1dEZvNm51bGJudFByQW02d0kwQT09" allow="camera; microphone; display-capture" id="zoomIframe"></iframe>
+        </div>
+
+        <div id="chat-updates"></div> 
+
+        <div class="chat-container">
+            <!-- <h2>Leaderboard</h2>
+            <input type="text" id="chatText" name="chat-text" placeholder="Chat with others" class="chat-box">
+            <div class="chat-send-btn">
+                <span class="material-symbols-outlined">
+                    send
+                </span>
+            </div> -->
+
+            <h1>Leaderboard</h1>
+            <table id="leaderboard">
+                <thead>
+                    <tr>
+                        <th>Rank</th>
+                        <th>Name</th>
+                        <th>Points</th>
+                    </tr>
+                </thead>
+                <tbody>
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <script>
+        const loginForm = document.getElementById('login-form');
+        const mainLayout = document.getElementById('mainLayout');
+
+        const zoomContainer = document.getElementById('zoom');
+        const zoomIframe = document.getElementById('zoomIframe');
+
+        const URL_BASE = "https://fscproject-c108d-default-rtdb.asia-southeast1.firebasedatabase.app/database/events/"; // Replace with your Firebase URL
+        const ZOOM_URL = "https://success.zoom.us/wc/join/";
+
+        const leaderboardTable = document.getElementById('leaderboard').querySelector('tbody');
+        var pointsUrl = 'https://fscproject-c108d-default-rtdb.asia-southeast1.firebasedatabase.app/database/events/0/points.json';
+        var attendeesUrl = 'https://fscproject-c108d-default-rtdb.asia-southeast1.firebasedatabase.app/database/events/0/attendees.json';
+
+        var attendeesDatas;
+
+        var usersData = [];
+
+        const errorPlayer = document.getElementById('errorPlayer');
+
+        errorPlayer.addEventListener('complete', () => {
+            hideOverlay(document.getElementById("errorLottie"));
+        });
+
+        function getMeetingLinkFromFirebase() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const meetingId = urlParams.get('meetingId');
+
+            if (meetingId) {
+                const firebaseUrl = URL_BASE + meetingId + ".json";
+
+                fetch(firebaseUrl)
+                .then(response => response.json())
+                .then(data => {
+                    document.getElementById('s').textContent = data.eventName;
+                    if (data && data.link) {
+                        zoomIframe.src = ZOOM_URL + data.link;
+                    } else {
+                        alert("No Meeting Link!");
+                        document.getElementById("meetingLink").textContent = "Meeting link not found.";
+                    }
+                })
+                .catch(error => {
+                    alert("No Meeting Link!");
+                    console.error('Error fetching meeting link:', error);
+                    document.getElementById("meetingLink").textContent = "Error fetching meeting link.";
+                });
+            } else {
+                alert("No Meeting Link!");
+                document.getElementById("meetingLink").textContent = "Please provide a meeting ID in the URL.";
+            }
+
+            hideOverlay(document.getElementById("lottieoverlay"));
+        }
+
+        function fetchData() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const meetingId = urlParams.get('meetingId');
+
+            pointsUrl = "https://fscproject-c108d-default-rtdb.asia-southeast1.firebasedatabase.app/database/events/" + meetingId + "/points.json";
+            attendeesUrl = "https://fscproject-c108d-default-rtdb.asia-southeast1.firebasedatabase.app/database/events/" + meetingId + "/attendees.json";
+
+            Promise.all([
+                fetch(pointsUrl),
+                fetch(attendeesUrl)
+            ])
+            .then(responses => Promise.all(responses.map(res => res.json())))
+            .then(([pointsData, attendeesData]) => {
+                updateLeaderboard(pointsData, attendeesData);
+            })
+            .catch(error => console.error('Error fetching data:', error));
+        }
+
+        function updateLeaderboard(pointsData, attendeesData) {
+            attendeesDatas = attendeesData;
+
+            const entries = Object.entries(pointsData);
+            entries.sort((a, b) => b[1] - a[1]); // Sort by points (descending)
+
+            leaderboardTable.innerHTML = ''; // Clear previous entries
+
+            entries.forEach(([index, points], rank) => {
+                const name = attendeesData[index] || "Unknown";
+                const row = leaderboardTable.insertRow();
+                row.insertCell().textContent = rank + 1;
+                row.insertCell().textContent = name;
+                row.insertCell().textContent = points;
+            });
+        }
+
+        function showOverlay(overlay, url, player) {
+            const body = document.body;
+
+            overlay.style.display = "block";
+            
+            player.load(url);
+            player.seek(0);
+            
+            body.style.pointerEvents = "none"; // Disable interactions when the overlay is up
+        }
+
+        function hideOverlay(overlay) {
+            const body = document.body;
+
+            overlay.style.display = "none";
+            body.style.pointerEvents = "auto"; // Re-enable interactions
+        }
+
+        async function delay(ms) {
+            return new Promise(resolve => setTimeout(resolve, ms));
+        }
+
+        async function fetchUserData(email){
+            const usersURL = "https://fscproject-c108d-default-rtdb.asia-southeast1.firebasedatabase.app/database/users.json";
+            
+            showOverlay(document.getElementById("lottieoverlay"), "https://lottie.host/89f9c266-0467-44db-abd0-0939bbbf6a0d/ww8nnrDH3q.json", document.getElementById("player"));
+
+            var err = false;
+
+            await fetch(usersURL)
+                .then(response => response.json())
+                .then(data => {
+                    // Convert the response JSON to an object
+                    usersData = Object.values(data);
+
+                    // Find the user based on the provided email
+                    const user = usersData.find(user => user.email === email);
+
+                    if (user) {
+                        // User exists, update the 'name' field in the form
+                        mainLayout.classList.remove("main-layout-hidden");
+                        mainLayout.classList.add("main-layout");
+
+                        loginForm.style.display = 'none';
+
+                        hideOverlay(document.getElementById("lottieoverlay"));
+                    } else {
+                        // alert("Not Registered!");
+                        hideOverlay(document.getElementById("lottieoverlay"));
+                        showOverlay(document.getElementById("errorLottie"), "https://lottie.host/9f4c43d8-d8e6-4bde-b8e5-2a2c3a159153/7xEQWGcjWF.json", document.getElementById("errorPlayer"));
+                        err = true;
+                    }
+                })
+            .catch(error => console.error('Error fetching user data:', error));
+        }
+
+        loginForm.addEventListener('submit', function(event) {
+            event.preventDefault(); 
+
+            fetchUserData(document.getElementById('email').value);
+        });
+    
+        //Zoom
+        const clientId = "lqhJPDBaTNWD0MStTYxOw";
+        const clientSecret = "LecDYA0h0svngAM44KsKzMrPM1QMggi4";
+        const accountId = "fTYvGYZcTqCJNfC00-YzIw";
+
+        var accessToken = "eyJzdiI6IjAwMDAwMSIsImFsZyI6IkhTNTEyIiwidiI6IjIuMCIsImtpZCI6IjI4ZDkyN2JkLTc1MGItNGFlMC1iOGQzLWUwZDNiZWU4MTgyNiJ9.eyJhdWQiOiJodHRwczovL29hdXRoLnpvb20udXMiLCJ1aWQiOiJaTDJXVnk5VlQwdThoRDRtb29USF9BIiwidmVyIjo5LCJhdWlkIjoiOWE0MDMzMWFlYWU3MjlmMWMxNzZlODJjYzY0MjZlYmIiLCJuYmYiOjE3MTA1Njg1NzksImNvZGUiOiJrbmtqMnZMSlI2dURESTZuQ1hJYjJnakZVYjVpMThJUmMiLCJpc3MiOiJ6bTpjaWQ6bHFoSlBEQmFUTldEME1TdFRZeE93IiwiZ25vIjowLCJleHAiOjE3MTA1NzIxNzksInR5cGUiOjMsImlhdCI6MTcxMDU2ODU3OSwiYWlkIjoiZlRZdkdZWmNUcUNKTmZDMDAtWXpJdyJ9.qnCBx1v9hppJIcievL11Y4u3JMo61Nqfg545txF7OflyB796F7bbbmT9LpJ707z5BWLpN0jmlEkC1g7c_i-6Sw"; 
+        const subscriptionId = "NLnwdAH2TcSdPWeRycCNEg"; // Find this in your App settings
+        var webSocketUrl = "wss://ws.zoom.us/ws?subscriptionId=" + subscriptionId + "&access_token=" + accessToken;
+        //var webSocketUrl = "wss://ws.zoom.us/ws?subscriptionId=NLnwdAH2TcSdPWeRycCNEg&access_token=eyJzdiI6IjAwMDAwMSIsImFsZyI6IkhTNTEyIiwidiI6IjIuMCIsImtpZCI6IjI4ZDkyN2JkLTc1MGItNGFlMC1iOGQzLWUwZDNiZWU4MTgyNiJ9.eyJhdWQiOiJodHRwczovL29hdXRoLnpvb20udXMiLCJ1aWQiOiJaTDJXVnk5VlQwdThoRDRtb29USF9BIiwidmVyIjo5LCJhdWlkIjoiOWE0MDMzMWFlYWU3MjlmMWMxNzZlODJjYzY0MjZlYmIiLCJuYmYiOjE3MTA1Njg1NzksImNvZGUiOiJrbmtqMnZMSlI2dURESTZuQ1hJYjJnakZVYjVpMThJUmMiLCJpc3MiOiJ6bTpjaWQ6bHFoSlBEQmFUTldEME1TdFRZeE93IiwiZ25vIjowLCJleHAiOjE3MTA1NzIxNzksInR5cGUiOjMsImlhdCI6MTcxMDU2ODU3OSwiYWlkIjoiZlRZdkdZWmNUcUNKTmZDMDAtWXpJdyJ9.qnCBx1v9hppJIcievL11Y4u3JMo61Nqfg545txF7OflyB796F7bbbmT9LpJ707z5BWLpN0jmlEkC1g7c_i-6Sw";
+        var webSocket = new WebSocket(webSocketUrl);
+
+        async function getAccessToken() {
+            const credentials = "bHFoSlBEQmFUTldEME1TdFRZeE93OkxlY0RZQTBoMHN2bmdBTTQ0S3NLek1yUE0xUU1nZ2k0"; // Base64 encoding
+            const response = await fetch('https://zoom.us/oauth/token?grant_type=account_credentials&account_id=' + accountId, {
+                method: 'POST',
+                headers: {
+                    'Authorization': `Basic ${credentials}`
+                }
+            });
+
+            if (response.ok) {
+                const data = await response.json();
+                return data.access_token; 
+            } else {
+                throw new Error("Error getting access token" + response.error); 
+            }
+        }
+
+        webSocket.onopen = () => {
+            alert('WebSocket connection established');
+
+            // Variables to track meeting state and heartbeat
+            let meetingStarted = false;
+            let heartbeatInterval = null; 
+
+            // ... your existing onmessage handler ...
+            alert(meetingStarted);
+            webSocket.onmessage = (event) => {
+                const dataM = JSON.parse(event.data);
+                const data = JSON.parse(dataM.content);
+
+                if (data.event === 'meeting.started') {
+                    alert('Meeting started!');
+                } else if (data.event === 'chat_message') {
+                    alert('New chat message:', data.payload.message); 
+                } else {
+                    alert(data.event + ':', data);
+                }
+
+                if (data.event === 'meeting.started') {
+                    alert('Meeting started!');
+                    meetingStarted = true;
+
+                    // Start heartbeat if meeting has started
+                    if (!heartbeatInterval) { 
+                        heartbeatInterval = setInterval(() => {
+                            sendHeartbeat();
+                        }, 30000); // 30 seconds
+                    }
+                } else if (data.event === 'meeting.ended') {
+                    alert('Meeting ended!');
+                    meetingStarted = false;
+
+                    // Stop heartbeat if meeting has ended
+                    if (heartbeatInterval) {
+                        clearInterval(heartbeatInterval);
+                        heartbeatInterval = null;
+                    }
+                } 
+                // ... the rest of your onmessage handler ...
+
+                webSocket.onerror = function(error) {
+                    if(error != undefined){
+                        console.log("WebSocket error:", error); 
+                    }
+                }
+            };
+
+            function sendHeartbeat() {
+                alert(meetingStarted);
+                if (true) { 
+                    // Logic to send the heartbeat message over the WebSocket
+                    alert('Sending heartbeat...'); // Replace with your actual sending code
+                } 
+            }
+        };
+
+        // Usage: 
+        getAccessToken()
+            .then(accessTokens => {
+                accessToken = accessTokens;
+                alert(webSocketUrl);
+
+                webSocket = new WebSocket(webSocketUrl);
+                alert(accessToken);
+            })
+        .catch(error => alert("Error fetching token:" + error));
+
+
+        // Initial fetch
+        fetchData();
+
+        // Option 1: Polling for updates
+        setInterval(fetchData, 5000); // Update every 5 seconds
+
+        // Call the function when the page loads
+        window.onload = getMeetingLinkFromFirebase;
+    </script>
+</body>
+</html>
