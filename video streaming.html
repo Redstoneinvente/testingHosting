@@ -451,12 +451,13 @@
         var webSocket = new WebSocket(webSocketUrl);
 
         async function getAccessToken() {
-            const credentials = "bHFoSlBEQmFUTldEME1TdFRZeE93OkxlY0RZQTBoMHN2bmdBTTQ0S3NLek1yUE0xUU1nZ2k0"; // Base64 encoding
-            const response = await fetch('https://zoom.us/oauth/token?grant_type=account_credentials&account_id=' + accountId, {
+            //const credentials = "bHFoSlBEQmFUTldEME1TdFRZeE93OkxlY0RZQTBoMHN2bmdBTTQ0S3NLek1yUE0xUU1nZ2k0"; // Base64 encoding
+            const response = await fetch('https://us-central1-fscproject-c108d.cloudfunctions.net/function-1',
+            {
                 method: 'POST',
-                headers: {
-                    'Authorization': `Basic ${credentials}`
-                }
+                // headers: {
+                //     'Authorization': `Basic ${credentials}`
+                // }
             });
 
             if (response.ok) {
