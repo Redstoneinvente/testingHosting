@@ -5,6 +5,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Embedded Zoom Meeting</title>
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
+
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@48,400,0,0" />
+    <link rel="stylesheet" href="https://unpkg.com/material-components-web@latest/dist/material-components-web.min.css">
+    <script src="https://unpkg.com/material-components-web@latest/dist/material-components-web.min.js"></script>
+
     <style>
         table {
             border-collapse: collapse;
@@ -176,6 +181,33 @@
         pointer-events: none; 
         }
 
+        /* Basic Modal Styling */
+        .modal {
+        display: none; 
+        position: fixed;
+        left: 0;
+        top: 0;
+        width: 100%; 
+        height: 100%; 
+        background-color: rgba(0, 0, 0, 0.4);
+        }
+
+        .modal-content {
+        background-color: #fff;
+        margin: 15% auto;
+        padding: 20px;
+        border: 1px solid #888;
+        width: 30%;
+        }
+
+        .close-btn {
+        color: #aaa;
+        float: right;
+        font-size: 28px;
+        font-weight: bold;
+        cursor: pointer;
+        }
+
         :root {
           --primary: rgb(101, 85, 143);
           --surface-tint: rgb(101 85 143);
@@ -287,6 +319,64 @@
             </table>
         </div>
     </div>
+
+    <!-- <div id="userModal" class="modal">
+        <div class="modal-content">
+          <span class="close-btn" onclick="closeModal()">&times;</span>
+          <h2 id="userName"></h2>
+          <p id="userEmail"></p>
+          <button onclick="connectUser()">Connect</button>
+          <button onclick="requestMeeting()">Request Meeting</button>
+        </div>
+    </div> -->
+
+    <div id="userModal" class="mdc-dialog" role="alertdialog">
+        <div class="mdc-dialog__container">
+          <div class="mdc-dialog__surface">
+            <header class="user-header">
+              <img id="userProfilePic" src="https://images.pexels.com/photos/7752812/pexels-photo-7752812.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2" alt="Profile Picture" width="500" height="500" style="object-fit: cover;">
+              <div class="user-info">
+              </div>
+            </header>
+            <div class="mdc-dialog__content">
+              <p><span class="info-label">Name:</span> <span id="userName"></span></p>
+              <p><span class="info-label">Email:</span> <span id="userEmail"></span></p>
+              <p><span class="info-label">Country:</span> <span id="userCountry"></span></p>
+              <p><span class="info-label">Bio:</span> <span id="userBio"></span></p>
+              <p><span class="info-label">Interests:</span> <span id="userInterests"></span></p>
+            </div>
+            <div class="mdc-dialog__actions">
+              <button type="button" class="mdc-button mdc-dialog__button" onclick="connectUser()" id="connectButton">
+                <span class="mdc-button__label" id="connectButtonText">Connect</span>
+              </button>
+              <button type="button" class="mdc-button mdc-dialog__button" onclick="requestMeeting()">
+                <span class="mdc-button__label">Request Meeting</span>
+              </button>
+            </div>
+          </div>
+        </div>
+        <div class="mdc-dialog__scrim"></div>
+      </div>      
+
+      <div id="zoomPrompt" class="mdc-dialog" role="alertdialog">
+        <div class="mdc-dialog__container">
+          <div class="mdc-dialog__surface">
+            <header class="user-header">
+                <h1 style="margin: 5%;text-align: center;">Link your Zoom!</h1>
+            </header>
+            <div class="mdc-dialog__content">
+              <p><span class="info-label">Link your Zoom account to proceed.</span></p>
+            </div>
+            <div class="mdc-dialog__actions">
+              <button type="button" class="mdc-button mdc-dialog__button" onclick="startZoomOAuth()" id="linkToZoom">
+                <span class="mdc-button__label" id="connectButtonText">Link Zoom account</span>
+              </button>
+            </div>
+          </div>
+        </div>
+        <div class="mdc-dialog__scrim" onclick="startZoomOAuth()"></div>
+      </div>  
+
     <script>
         const loginForm = document.getElementById('login-form');
         const mainLayout = document.getElementById('mainLayout');
@@ -301,11 +391,32 @@
         var pointsUrl = 'https://fscproject-c108d-default-rtdb.asia-southeast1.firebasedatabase.app/database/events/0/points.json';
         var attendeesUrl = 'https://fscproject-c108d-default-rtdb.asia-southeast1.firebasedatabase.app/database/events/0/attendees.json';
 
+        var userEmail = "";
+
         var attendeesDatas;
 
         var usersData = [];
 
+        var thisEvent;
+
+        var canFetch = true;
+
         const errorPlayer = document.getElementById('errorPlayer');
+
+        const dialog = new mdc.dialog.MDCDialog(document.getElementById('userModal'));
+        const zoomLinkPrompt = new mdc.dialog.MDCDialog(document.getElementById('zoomPrompt'));
+
+        const button = document.getElementById("connectButton");
+
+        var linked = false;
+
+        function enableButton() {
+            button.removeAttribute("disabled");
+        }
+
+        function disableButton() {
+            button.disabled = true; 
+        }
 
         errorPlayer.addEventListener('complete', () => {
             hideOverlay(document.getElementById("errorLottie"));
@@ -314,6 +425,7 @@
         function getMeetingLinkFromFirebase() {
             const urlParams = new URLSearchParams(window.location.search);
             const meetingId = urlParams.get('meetingId');
+            thisMeetingId = meetingId;
 
             if (meetingId) {
                 const firebaseUrl = URL_BASE + meetingId + ".json";
@@ -321,6 +433,8 @@
                 fetch(firebaseUrl)
                 .then(response => response.json())
                 .then(data => {
+                    thisEvent = data;
+                    
                     document.getElementById('s').textContent = data.eventName;
                     if (data && data.link) {
                         zoomIframe.src = ZOOM_URL + data.link;
@@ -342,39 +456,290 @@
             hideOverlay(document.getElementById("lottieoverlay"));
         }
 
-        function fetchData() {
+        async function fetchData() {
             const urlParams = new URLSearchParams(window.location.search);
             const meetingId = urlParams.get('meetingId');
 
             pointsUrl = "https://fscproject-c108d-default-rtdb.asia-southeast1.firebasedatabase.app/database/events/" + meetingId + "/points.json";
             attendeesUrl = "https://fscproject-c108d-default-rtdb.asia-southeast1.firebasedatabase.app/database/events/" + meetingId + "/attendees.json";
 
-            Promise.all([
-                fetch(pointsUrl),
-                fetch(attendeesUrl)
-            ])
-            .then(responses => Promise.all(responses.map(res => res.json())))
-            .then(([pointsData, attendeesData]) => {
-                updateLeaderboard(pointsData, attendeesData);
-            })
-            .catch(error => console.error('Error fetching data:', error));
+            while (!canFetch) {
+                await new Promise(resolve => setTimeout(resolve, 100)); // Yield control briefly
+            }
+
+            const pointsResponse = await fetch(pointsUrl);
+            const points = await pointsResponse.json() || [];
+
+            const attendeesResponse = await fetch(attendeesUrl);
+            const attendees = await attendeesResponse.json() || [];
+
+            updateLeaderboard(points, attendees);
+
+            // Promise.all([
+            //     fetch(pointsUrl),
+            //     fetch(attendeesUrl)
+            // ])
+            // .then(responses => Promise.all(responses.map(res => res.json())))
+            // .then(([pointsData, attendeesData]) => {
+            //     updateLeaderboard(pointsData, attendeesData);
+            // })
+            // .catch(error => console.error('Error fetching data:', error));
         }
 
-        function updateLeaderboard(pointsData, attendeesData) {
+        async function updateLeaderboard(pointsData, attendeesData) {
             attendeesDatas = attendeesData;
 
             const entries = Object.entries(pointsData);
             entries.sort((a, b) => b[1] - a[1]); // Sort by points (descending)
 
+            const usersURL = "https://fscproject-c108d-default-rtdb.asia-southeast1.firebasedatabase.app/database/users.json";
+            
+            const nameResponse = await fetch(usersURL);
+            const names = await nameResponse.json() || [];
+
             leaderboardTable.innerHTML = ''; // Clear previous entries
 
             entries.forEach(([index, points], rank) => {
-                const name = attendeesData[index] || "Unknown";
-                const row = leaderboardTable.insertRow();
-                row.insertCell().textContent = rank + 1;
-                row.insertCell().textContent = name;
-                row.insertCell().textContent = points;
+                const inddex = names.findIndex(person => person.userID === attendeesData[index]);
+
+                const isUser = names[inddex].email === userEmail;
+
+                var name = "";
+
+                if(isUser){
+                    currentUser = names[inddex];
+                    name = names[inddex].name + " (YOU)";
+                    let row = leaderboardTable.insertRow();
+                    row.style.backgroundColor = '#E6E6FA';
+
+                    let cell1 = row.insertCell()
+                    cell1.textContent = rank + 1;
+                    cell1.style.fontWeight = 'bold'; 
+
+                    let cell2 = row.insertCell()
+                    cell2.textContent = name;
+                    cell2.style.fontWeight = 'bold'; 
+
+                    let cell3 = row.insertCell()
+                    cell3.textContent = points;
+                    cell3.style.fontWeight = 'bold'; 
+                }
+                else{
+                    name = names[inddex].name || "Unknown"
+
+                    const row = leaderboardTable.insertRow();
+
+                    // Hover effect
+                    row.addEventListener('mouseover', function() {
+                        row.style.backgroundColor = 'lightgray'; // Change background color on hover
+                    });
+
+                    row.addEventListener('mouseout', function() {
+                        row.style.backgroundColor = ''; // Reset background color
+                    });
+
+                    // Click action
+                    row.addEventListener('click', function() {
+                        showUser(names[inddex]);
+                    });
+
+                    let cell1 = row.insertCell()
+                    cell1.textContent = rank + 1;
+
+                    let cell2 = row.insertCell()
+                    cell2.textContent = name;
+
+                    let cell3 = row.insertCell()
+                    cell3.textContent = points;
+                }
             });
+        }
+
+        function showUser(user) {
+            openModal(user);
+        }
+
+        function openModal(user) {
+            if (user) {
+                currentUserModal = user;
+
+                document.getElementById("userName").textContent = user.name;
+                document.getElementById("userEmail").textContent = user.email;
+
+                document.getElementById("userCountry").textContent = user.country;
+                document.getElementById("userBio").textContent = user.bio;
+                document.getElementById("userInterests").textContent = user.interest;
+
+                const profilePic = document.getElementById("userProfilePic");
+
+                if (profilePic) {
+                    profilePic.src = user.profilePic;
+                } else {
+                    console.error("Profile picture element not found.");
+                }
+
+                if(currentUserModal.connections) {
+                    if(currentUserModal.connections.find(connection => connection === currentUser.userID)) {
+                        connectButtonText.textContent = "Connected!";
+                        disableButton();
+                    }
+                    else{
+                        enableButton();
+                    }
+                }
+                else{
+                    enableButton();
+                }
+
+                dialog.open(); 
+            }
+        }
+
+        function closeModal() {
+            dialog.close(); 
+        }
+
+        var currentUserModal;
+        var currentUser;
+        var thisMeetingId;
+
+        async function connectUser() {
+            if(currentUserModal.connections) {
+                if(currentUserModal.connections.find(connection => connection === currentUser.userID)) {
+                    connectButtonText.textContent = "Connected!";
+                    disableButton();
+                    return;
+                }
+            }
+
+            const meetingId = thisMeetingId;
+            showOverlay(document.getElementById("lottieoverlay"), "https://lottie.host/89f9c266-0467-44db-abd0-0939bbbf6a0d/ww8nnrDH3q.json", document.getElementById("player"));
+
+            const usersURL = "https://fscproject-c108d-default-rtdb.asia-southeast1.firebasedatabase.app/database/users.json";
+            var connectionsEventURL = "https://fscproject-c108d-default-rtdb.asia-southeast1.firebasedatabase.app/database/events/" + meetingId + "/connections.json";
+
+            const usersResponse = await fetch(usersURL);
+            const allUsers = await usersResponse.json() || [];
+
+            const inddex2 = allUsers.findIndex(person => person.userID === currentUserModal.userID);
+
+            const user2URL = "https://fscproject-c108d-default-rtdb.asia-southeast1.firebasedatabase.app/database/users/" + inddex2 + "/connections.json";
+        
+            if (Array.isArray(allUsers[inddex2].pendingMeetings) && allUsers[inddex2].pendingMeetings.length > 0) {
+                console.log("Array good");
+            } else {
+                allUsers[inddex2].pendingMeetings = [];
+            }
+
+            const connectionResponse = await fetch(user2URL);
+            var connectionThis = await connectionResponse.json() || [];
+
+            connectionThis.push(currentUser.userID);
+
+            const connectionsResponseE = await fetch(connectionsEventURL);
+            var connectionsE = await connectionsResponseE.json() || [];
+
+            var indexForConnection = connectionsE.length;
+
+            var thisConnection = new Connection(currentUser.userID, currentUserModal.userID);
+            thisConnection.isMeeting = false;
+
+            connectionsE.push(thisConnection);
+
+            await fetch(connectionsEventURL, {
+                method: 'PUT',
+                body: JSON.stringify(connectionsE)
+            });
+
+            await fetch(user2URL, {
+                method: 'PUT',
+                body: JSON.stringify(connectionThis)
+            });
+
+            hideOverlay(document.getElementById("lottieoverlay"));
+
+            connectButtonText.textContent = "Connected!";
+            disableButton();
+        }
+
+        async function requestMeeting() {
+            const meetingId = thisMeetingId;
+
+            showOverlay(document.getElementById("lottieoverlay"), "https://lottie.host/89f9c266-0467-44db-abd0-0939bbbf6a0d/ww8nnrDH3q.json", document.getElementById("player"));
+
+            const usersURL = "https://fscproject-c108d-default-rtdb.asia-southeast1.firebasedatabase.app/database/users.json";
+            var connectionsEventURL = "https://fscproject-c108d-default-rtdb.asia-southeast1.firebasedatabase.app/database/events/" + meetingId + "/connections.json";
+            
+            const usersResponse = await fetch(usersURL);
+            const allUsers = await usersResponse.json() || [];
+
+            const connectionsResponse = await fetch(connectionsEventURL);
+            var connections = await connectionsResponse.json() || [];
+
+            const inddex = allUsers.findIndex(person => person.userID === currentUser.userID);
+            const inddex2 = allUsers.findIndex(person => person.userID === currentUserModal.userID);
+
+            const user1URL = "https://fscproject-c108d-default-rtdb.asia-southeast1.firebasedatabase.app/database/users/" + inddex + "/pendingMeetings.json";
+            const user2URL = "https://fscproject-c108d-default-rtdb.asia-southeast1.firebasedatabase.app/database/users/" + inddex2 + "/pendingMeetings.json";
+        
+            if (Array.isArray(allUsers[inddex].pendingMeetings) && allUsers[inddex].pendingMeetings.length > 0) {
+                console.log("Array good");
+            } else {
+                allUsers[inddex].pendingMeetings = [];
+            }
+
+            if (Array.isArray(allUsers[inddex2].pendingMeetings) && allUsers[inddex2].pendingMeetings.length > 0) {
+                console.log("Array good");
+            } else {
+                allUsers[inddex2].pendingMeetings = [];
+            }
+
+            var indexForConnection = connections.length;
+            var thisMeeting = new Meeting(thisEvent.eventID, indexForConnection);
+
+            var thisConnection = new Connection(currentUser.userID, currentUserModal.userID, true);
+            //alert(thisConnection.connectionUsers.initatorUserID.userID);
+
+            allUsers[inddex].pendingMeetings.push(thisMeeting);
+            allUsers[inddex2].pendingMeetings.push(thisMeeting);
+
+            thisConnection.isMeeting = true;
+            connections.push(thisConnection);
+
+            // var connectionsEventURLSend = "https://fscproject-c108d-default-rtdb.asia-southeast1.firebasedatabase.app/database/events/" + meetingId + "/connections/" + indexForConnection + ".json";
+
+            await fetch(connectionsEventURL, {
+                method: 'PUT',
+                body: JSON.stringify(connections)
+            });
+
+            //alert(JSON.stringify(thisConnection));
+
+            await fetch(user1URL, {
+                method: 'PUT', // Use PUT to overwrite the entire array
+                body: JSON.stringify(allUsers[inddex].pendingMeetings)
+            });
+
+            await fetch(user2URL, {
+                method: 'PUT', // Use PUT to overwrite the entire array
+                body: JSON.stringify(allUsers[inddex2].pendingMeetings)
+            });
+
+            //https://lottie.host/5f4420f8-6ecd-4ff4-a996-edf4676793b6/vCRoBP8Vqv.json
+            hideOverlay(document.getElementById("lottieoverlay"));
+            alert("Meeting Requested! Wait for a confirmation from " + allUsers[inddex2].name);
+
+            //showOverlay(document.getElementById("errorLottie"), "https://lottie.host/5f4420f8-6ecd-4ff4-a996-edf4676793b6/vCRoBP8Vqv.json", document.getElementById("errorPlayer"));
+
+            canFetch=true;
+        }
+
+        // Click outside to close
+        window.onclick = function(event) {
+            const modal = document.getElementById("userModal");
+            if (event.target === modal) {
+                closeModal();
+            }
         }
 
         function showOverlay(overlay, url, player) {
@@ -416,6 +781,23 @@
                     const user = usersData.find(user => user.email === email);
 
                     if (user) {
+                        //check if user linked their zoom account
+                        
+                        if(!user.userZoomEmail) {
+                            //alert("Zoom Error");
+                            zoomLinkPrompt.open();
+                            hideOverlay(document.getElementById("lottieoverlay"));
+
+                            return new Promise(resolve => {
+                                const intervalId = setInterval(() => {
+                                if (linked) {
+                                    clearInterval(intervalId);
+                                    resolve(); 
+                                }
+                                }, 100);
+                            });
+                        }
+
                         // User exists, update the 'name' field in the form
                         mainLayout.classList.remove("main-layout-hidden");
                         mainLayout.classList.add("main-layout");
@@ -436,15 +818,17 @@
         loginForm.addEventListener('submit', function(event) {
             event.preventDefault(); 
 
-            fetchUserData(document.getElementById('email').value);
+            userEmail = document.getElementById('email').value;
+
+            fetchUserData(userEmail);
         });
     
         //Zoom
-        const clientId = "lqhJPDBaTNWD0MStTYxOw";
-        const clientSecret = "LecDYA0h0svngAM44KsKzMrPM1QMggi4";
-        const accountId = "fTYvGYZcTqCJNfC00-YzIw";
+        //const clientId = "...";
+        const clientSecret = "...";
+        const accountId = "...";
 
-        var accessToken = "eyJzdiI6IjAwMDAwMSIsImFsZyI6IkhTNTEyIiwidiI6IjIuMCIsImtpZCI6IjI4ZDkyN2JkLTc1MGItNGFlMC1iOGQzLWUwZDNiZWU4MTgyNiJ9.eyJhdWQiOiJodHRwczovL29hdXRoLnpvb20udXMiLCJ1aWQiOiJaTDJXVnk5VlQwdThoRDRtb29USF9BIiwidmVyIjo5LCJhdWlkIjoiOWE0MDMzMWFlYWU3MjlmMWMxNzZlODJjYzY0MjZlYmIiLCJuYmYiOjE3MTA1Njg1NzksImNvZGUiOiJrbmtqMnZMSlI2dURESTZuQ1hJYjJnakZVYjVpMThJUmMiLCJpc3MiOiJ6bTpjaWQ6bHFoSlBEQmFUTldEME1TdFRZeE93IiwiZ25vIjowLCJleHAiOjE3MTA1NzIxNzksInR5cGUiOjMsImlhdCI6MTcxMDU2ODU3OSwiYWlkIjoiZlRZdkdZWmNUcUNKTmZDMDAtWXpJdyJ9.qnCBx1v9hppJIcievL11Y4u3JMo61Nqfg545txF7OflyB796F7bbbmT9LpJ707z5BWLpN0jmlEkC1g7c_i-6Sw"; 
+        var accessToken = "..."; 
         const subscriptionId = "NLnwdAH2TcSdPWeRycCNEg"; // Find this in your App settings
         var webSocketUrl = "wss://ws.zoom.us/ws?subscriptionId=" + subscriptionId + "&access_token=" + accessToken;
         //var webSocketUrl = "wss://ws.zoom.us/ws?subscriptionId=NLnwdAH2TcSdPWeRycCNEg&access_token=eyJzdiI6IjAwMDAwMSIsImFsZyI6IkhTNTEyIiwidiI6IjIuMCIsImtpZCI6IjI4ZDkyN2JkLTc1MGItNGFlMC1iOGQzLWUwZDNiZWU4MTgyNiJ9.eyJhdWQiOiJodHRwczovL29hdXRoLnpvb20udXMiLCJ1aWQiOiJaTDJXVnk5VlQwdThoRDRtb29USF9BIiwidmVyIjo5LCJhdWlkIjoiOWE0MDMzMWFlYWU3MjlmMWMxNzZlODJjYzY0MjZlYmIiLCJuYmYiOjE3MTA1Njg1NzksImNvZGUiOiJrbmtqMnZMSlI2dURESTZuQ1hJYjJnakZVYjVpMThJUmMiLCJpc3MiOiJ6bTpjaWQ6bHFoSlBEQmFUTldEME1TdFRZeE93IiwiZ25vIjowLCJleHAiOjE3MTA1NzIxNzksInR5cGUiOjMsImlhdCI6MTcxMDU2ODU3OSwiYWlkIjoiZlRZdkdZWmNUcUNKTmZDMDAtWXpJdyJ9.qnCBx1v9hppJIcievL11Y4u3JMo61Nqfg545txF7OflyB796F7bbbmT9LpJ707z5BWLpN0jmlEkC1g7c_i-6Sw";
@@ -469,28 +853,29 @@
         }
 
         webSocket.onopen = () => {
-            alert('WebSocket connection established');
+            console.log('WebSocket connection established');
 
             // Variables to track meeting state and heartbeat
             let meetingStarted = false;
             let heartbeatInterval = null; 
 
             // ... your existing onmessage handler ...
-            alert(meetingStarted);
+            console.log(meetingStarted);
             webSocket.onmessage = (event) => {
+                //alert(event.data);
                 const dataM = JSON.parse(event.data);
-                const data = JSON.parse(dataM.content);
+                const data = dataM;
 
                 if (data.event === 'meeting.started') {
-                    alert('Meeting started!');
+                    console.log('Meeting started!');
                 } else if (data.event === 'chat_message') {
-                    alert('New chat message:', data.payload.message); 
+                    console.log('New chat message:', data.payload.message); 
                 } else {
-                    alert(data.event + ':', data);
+                    console.log(data.event + ':', data);
                 }
 
                 if (data.event === 'meeting.started') {
-                    alert('Meeting started!');
+                    console.log('Meeting started!');
                     meetingStarted = true;
 
                     // Start heartbeat if meeting has started
@@ -500,7 +885,7 @@
                         }, 30000); // 30 seconds
                     }
                 } else if (data.event === 'meeting.ended') {
-                    alert('Meeting ended!');
+                    console.log('Meeting ended!');
                     meetingStarted = false;
 
                     // Stop heartbeat if meeting has ended
@@ -519,25 +904,108 @@
             };
 
             function sendHeartbeat() {
-                alert(meetingStarted);
+                console.log(meetingStarted);
                 if (true) { 
                     // Logic to send the heartbeat message over the WebSocket
-                    alert('Sending heartbeat...'); // Replace with your actual sending code
+                    console.log('Sending heartbeat...'); // Replace with your actual sending code
                 } 
             }
         };
 
         // Usage: 
-        getAccessToken()
-            .then(accessTokens => {
-                accessToken = accessTokens;
-                alert(webSocketUrl);
+        function accessTokenGet(){
+            getAccessToken()
+                .then(accessTokens => {
+                    accessToken = accessTokens;
+                    //alert(webSocketUrl);
 
-                webSocket = new WebSocket(webSocketUrl);
-                alert(accessToken);
-            })
-        .catch(error => alert("Error fetching token:" + error));
+                    webSocket = new WebSocket(webSocketUrl);
+                    //alert("" +accessToken);
+                })
+            .catch(error => console.log("Error fetching token:" + error));
+        }
 
+        const clientId = 'pFhcbr_WTP2xuYWzP_5scA'; 
+        const redirectUri = 'https://redstoneinvente.github.io/testingHosting/video%20streaming.html'; // Must match your Zoom app settings
+
+        //starts the flow
+        function startZoomOAuth() {
+            const authUrl = `https://zoom.us/oauth/authorize?response_type=code&client_id=${clientId}&redirect_uri=${redirectUri}?meetingId=${meetingId}`;
+            window.location.href = authUrl; 
+        }
+
+        // Handle code returned from Zoom (example using URL query parameters)
+        function handleAuthorizationCode() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const code = urlParams.get('code');
+
+            if (code) {
+                fetchZoomUserInfo(code);
+            }
+        }
+
+        async function fetchZoomUserInfo(code) {
+            // Placeholder: Securely exchange code for access token on your backend
+            const user = await exchangeCodeForToken(code); 
+            
+            displayUserInfo(user);
+        }
+
+        async function displayUserInfo(data) {
+            const userZoomEmail = data.email;
+            const userZoomID = data.id;
+
+            const usersURL = "https://fscproject-c108d-default-rtdb.asia-southeast1.firebasedatabase.app/database/users.json";
+
+            showOverlay(document.getElementById("lottieoverlay"), "https://lottie.host/89f9c266-0467-44db-abd0-0939bbbf6a0d/ww8nnrDH3q.json", document.getElementById("player"));
+
+            var err = false;
+
+            const usersResponse = await fetch(usersURL);
+            const allUsers = await usersResponse.json() || [];
+
+            const inddex2 = allUsers.findIndex(person => person.userID === currentUser.userID);
+
+            var user = allUsers[inddex2];
+
+            const user1URL = "https://fscproject-c108d-default-rtdb.asia-southeast1.firebasedatabase.app/database/users/" + inddex2 + ".json";
+
+            user.zoomEmail = userZoomEmail;
+            user.zoomID = userZoomID;
+
+            await fetch(user1URL, {
+                method: 'PUT',
+                body: JSON.stringify(user)
+            });
+
+            linked = true;
+        }
+
+        async function exchangeCodeForToken(code) {
+            const cloudFunctionUrl = 'https://us-central1-fscproject-c108d.cloudfunctions.net/codeToZoomAccessToken';
+            const fetchUrl = `${cloudFunctionUrl}?code=${code}&redirectUri=${redirectUri}`;
+
+            try {
+                const response = await fetch(fetchUrl);
+
+                if (!response.ok) {
+                    alert(`Error from Cloud Function: ${response.status}`);
+                }
+
+                const data = await response.json(); // Assuming it returns JSON
+
+                return data; 
+            } catch (error) {
+                    alert('Error exchanging code:', error); 
+                throw error; // Re-throw so you can handle it where you call this function
+            }
+        }
+
+        // On page load, check if redirected back from Zoom with code
+        handleAuthorizationCode(); 
+
+        //Get Access Token
+        accessTokenGet();
 
         // Initial fetch
         fetchData();
@@ -545,8 +1013,42 @@
         // Option 1: Polling for updates
         setInterval(fetchData, 5000); // Update every 5 seconds
 
+        // Option 1: Polling for updates
+        setInterval(accessTokenGet, 3500000); // Update every 5 seconds
+
         // Call the function when the page loads
         window.onload = getMeetingLinkFromFirebase;
+
+        class Connection {
+            constructor(initiator, otherUser, isMeeting) {
+                this.connectionUsers = new ConnectionUsers(initiator, otherUser);
+                this.isMeeting = isMeeting;
+            }
+
+            // Simulate fetching from a database (replace with actual logic)
+            async getInitiatorUser(database) { 
+                return database.getUser(this.connectionUsers.initatorUserID);
+            }
+
+            async getOtherUser(database) {
+                return database.getUser(this.connectionUsers.otherUserID);
+            }
+        }
+
+        class ConnectionUsers {
+            constructor(initiator, otherUser) {
+                this.initatorUserID = initiator;
+                this.otherUserID = otherUser;
+            }
+        }
+
+        class Meeting {
+            constructor(eventId, connectionIndex) {
+                this.eventId = eventId;
+                this.connectionIndex = connectionIndex;
+                this.accepted = false;
+            }
+        } 
     </script>
 </body>
 </html>
