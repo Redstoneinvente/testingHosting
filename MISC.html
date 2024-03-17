@@ -4,7 +4,7 @@
   <title>Zoom Link</title>
 </head>
 <body>
-    <div>V9</div>
+    <div>V10</div>
   <button id="zoomLinkButton">Link with Zoom</button>
   <div id="userInfo"></div>
 </body>
@@ -25,8 +25,10 @@ function handleAuthorizationCode() {
   const urlParams = new URLSearchParams(window.location.search);
   const code = urlParams.get('code');
 
+    alert(code);
+
   if (code) {
-    fetchZoomUserInfo(code);
+    //fetchZoomUserInfo(code);
   }
 }
 
