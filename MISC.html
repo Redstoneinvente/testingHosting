@@ -4,7 +4,7 @@
   <title>Zoom Link</title>
 </head>
 <body>
-    <div>V10</div>
+    <div>V11</div>
   <button id="zoomLinkButton">Link with Zoom</button>
   <div id="userInfo"></div>
 </body>
@@ -25,10 +25,9 @@ function handleAuthorizationCode() {
   const urlParams = new URLSearchParams(window.location.search);
   const code = urlParams.get('code');
 
-    alert(code);
 
   if (code) {
-    //fetchZoomUserInfo(code);
+    fetchZoomUserInfo(code);
   }
 }
 
@@ -115,8 +114,8 @@ async function exchangeCodeForToken(code) {
     }
 
     const data = await response.json(); // Assuming it returns JSON
-    alert("H" + data.access_token);
-    return data.access_token; 
+
+    return data.access_token.access_token; 
   } catch (error) {
     alert('Error exchanging code:', error); 
     throw error; // Re-throw so you can handle it where you call this function
