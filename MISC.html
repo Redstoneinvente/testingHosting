@@ -4,7 +4,7 @@
   <title>Zoom Link</title>
 </head>
 <body>
-    <div>V7</div>
+    <div>V8</div>
   <button id="zoomLinkButton">Link with Zoom</button>
   <div id="userInfo"></div>
 </body>
@@ -34,18 +34,23 @@ async function fetchZoomUserInfo(code) {
   // Placeholder: Securely exchange code for access token on your backend
   const accessToken = await exchangeCodeForToken(code); 
 
-  fetch('https://api.zoom.us/v2/users/me', {
+    alert(accessToken);
+
+  await fetch('https://api.zoom.us/v2/users/me', {
     method: 'GET',
     headers: {
       'Authorization': `Bearer ${accessToken}`
     }
   })
   .then(response => response.json())
-  .then(displayUserInfo)
-  .catch(error => console.error('Error fetching user info:', error));
+  .then(displayUserInfo(response))
+  .catch(error => alert('Error fetching user info:', error));
+
+  alert("Done");
 }
 
 function displayUserInfo(data) {
+    alert(`Email: ${data.email}, First Name: ${data.first_name}`);
   const userInfoDiv = document.getElementById('userInfo');
   userInfoDiv.textContent = `Email: ${data.email}, First Name: ${data.first_name}`;
 }
