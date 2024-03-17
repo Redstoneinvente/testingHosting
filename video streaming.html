@@ -788,14 +788,7 @@
                             zoomLinkPrompt.open();
                             hideOverlay(document.getElementById("lottieoverlay"));
 
-                            return new Promise(resolve => {
-                                const intervalId = setInterval(() => {
-                                if (linked) {
-                                    clearInterval(intervalId);
-                                    resolve(); 
-                                }
-                                }, 100);
-                            });
+                            //await WaitUntilLinked();
                         }
 
                         // User exists, update the 'name' field in the form
@@ -813,6 +806,17 @@
                     }
                 })
             .catch(error => console.error('Error fetching user data:', error));
+        }
+
+        async function WaitUntilLinked() {
+            return new Promise(resolve => {
+                                const intervalId = setInterval(() => {
+                                if (linked) {
+                                    clearInterval(intervalId);
+                                    resolve(); 
+                                }
+                    }, 100);
+            });
         }
 
         loginForm.addEventListener('submit', function(event) {
@@ -991,6 +995,7 @@
             });
 
             linked = true;
+            fetchUserData(currentUser.email);
         }
 
         async function exchangeCodeForToken(code) {
