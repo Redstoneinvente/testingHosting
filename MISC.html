@@ -4,7 +4,8 @@
   <title>Zoom Link</title>
 </head>
 <body>
-  <button id="zoomLinkButton" onclick="getUserInfo()">Link with Zoom</button>
+    <div>V1</div>
+  <button id="zoomLinkButton">Link with Zoom</button>
   <div id="userInfo"></div>
 </body>
 
@@ -12,7 +13,7 @@
     const clientId = 'pFhcbr_WTP2xuYWzP_5scA'; 
     const redirectUri = 'https://redstoneinvente.github.io/testingHosting/MISC.html'; // Must match your Zoom app settings
 
-document.getElementById('zoomAuthButton').addEventListener('click', startZoomOAuth);
+document.getElementById('zoomLinkButton').addEventListener('click', startZoomOAuth);
 
 function startZoomOAuth() {
   const authUrl = `https://zoom.us/oauth/authorize?response_type=code&client_id=${clientId}&redirect_uri=${redirectUri}`;
@@ -23,6 +24,8 @@ function startZoomOAuth() {
 function handleAuthorizationCode() {
   const urlParams = new URLSearchParams(window.location.search);
   const code = urlParams.get('code');
+
+    alert(code);
 
   if (code) {
     fetchZoomUserInfo(code);
