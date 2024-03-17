@@ -930,7 +930,7 @@
 
         //starts the flow
         function startZoomOAuth() {
-            const authUrl = `https://zoom.us/oauth/authorize?response_type=code&client_id=${clientId}&redirect_uri=${redirectUri}?meetingId=${meetingId}`;
+            const authUrl = `https://zoom.us/oauth/authorize?response_type=code&client_id=${clientId}&redirect_uri=${redirectUri}?meetingId=${thisMeetingId}`;
             window.location.href = authUrl; 
         }
 
