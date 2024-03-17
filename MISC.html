@@ -4,12 +4,13 @@
   <title>Zoom Link</title>
 </head>
 <body>
-    <div>V12</div>
+    <div>V13</div>
   <button id="zoomLinkButton">Link with Zoom</button>
   <div id="userInfo"></div>
 </body>
 
 <script>
+    const accessTokenTest = 'eyJzdiI6IjAwMDAwMSIsImFsZyI6IkhTNTEyIiwidiI6IjIuMCIsImtpZCI6IjM4NzBmYzM5LWY0ZDAtNDAwNS04MmY5LWVlYmM5MTg5MWIzZiJ9.eyJ2ZXIiOjksImF1aWQiOiJlNmZjOGQyMjkwZDg5MTUyNzY4Y2NiNjFiODZlZTlhMSIsImNvZGUiOiIzVFVqYWhNbUw3MllGZ1YzNDdyVE11Q2UzbllVNmVIMWciLCJpc3MiOiJ6bTpjaWQ6cEZoY2JyX1dUUDJ4dVlXelBfNXNjQSIsImdubyI6MCwidHlwZSI6MCwidGlkIjowLCJhdWQiOiJodHRwczovL29hdXRoLnpvb20udXMiLCJ1aWQiOiJaTDJXVnk5VlQwdThoRDRtb29USF9BIiwibmJmIjoxNzEwNzAwMDM0LCJleHAiOjE3MTA3MDM2MzQsImlhdCI6MTcxMDcwMDAzNCwiYWlkIjoiZlRZdkdZWmNUcUNKTmZDMDAtWXpJdyJ9.WA3iuEJeV3nTBT_H9oPsvtGT_TlXlklK8KZL9OY1wivRio5PbJBMSqZrvZhSTANL7a5VwIcCmmQo7CN_-XGPEw';
     const clientId = 'pFhcbr_WTP2xuYWzP_5scA'; 
     const redirectUri = 'https://redstoneinvente.github.io/testingHosting/MISC.html'; // Must match your Zoom app settings
 
@@ -33,25 +34,15 @@ function handleAuthorizationCode() {
 
 async function fetchZoomUserInfo(code) {
   // Placeholder: Securely exchange code for access token on your backend
-  const accessToken = await exchangeCodeForToken(code); 
-  var response;
-
-  alert(accessToken);
-
-  await fetch('https://api.zoom.us/v2/users/me', {
-    method: 'GET',
-    headers: {
-      'Authorization': `Bearer ${accessToken}`
-    }
-  })
-  .then(response => response.json())
-  .then(displayUserInfo(response))
-  .catch(error => alert('Error fetching user info:', error));
+  const user = await exchangeCodeForToken(code); 
+  
+  displayUserInfo(user);
 
   alert("Done");
 }
 
 function displayUserInfo(data) {
+    alert(data);
     alert(`Email: ${data.email}, First Name: ${data.first_name}`);
   const userInfoDiv = document.getElementById('userInfo');
   userInfoDiv.textContent = `Email: ${data.email}, First Name: ${data.first_name}`;
@@ -104,6 +95,7 @@ async function requestAccessToken(code) {
 }
 
 async function exchangeCodeForToken(code) {
+    return accessTokenTest;
   const cloudFunctionUrl = 'https://us-central1-fscproject-c108d.cloudfunctions.net/codeToZoomAccessToken';
   const fetchUrl = `${cloudFunctionUrl}?code=${code}`;
 
