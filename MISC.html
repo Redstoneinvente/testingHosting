@@ -4,7 +4,7 @@
   <title>Zoom Link</title>
 </head>
 <body>
-    <div>V16</div>
+    <div>V17</div>
   <button id="zoomLinkButton">Link with Zoom</button>
   <div id="userInfo"></div>
 </body>
@@ -36,13 +36,9 @@ async function fetchZoomUserInfo(code) {
   const user = await exchangeCodeForToken(code); 
   
   displayUserInfo(user);
-
-  alert("Done");
 }
 
 function displayUserInfo(data) {
-    alert(data);
-    alert(`Email: ${data.email}, First Name: ${data.first_name}`);
   const userInfoDiv = document.getElementById('userInfo');
   userInfoDiv.textContent = `Email: ${data.email}, First Name: ${data.first_name}`;
 }
@@ -89,7 +85,7 @@ async function requestAccessToken(code) {
 
 async function exchangeCodeForToken(code) {
   const cloudFunctionUrl = 'https://us-central1-fscproject-c108d.cloudfunctions.net/codeToZoomAccessToken';
-  const fetchUrl = `${cloudFunctionUrl}?code=${code}`;
+  const fetchUrl = `${cloudFunctionUrl}?code=${code}&redirectUri=${redirectUri}`;
 
   try {
     const response = await fetch(fetchUrl);
