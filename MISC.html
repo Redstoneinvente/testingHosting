@@ -4,7 +4,7 @@
   <title>Zoom Link</title>
 </head>
 <body>
-    <div>V2</div>
+    <div>V3</div>
   <button id="zoomLinkButton">Link with Zoom</button>
   <div id="userInfo"></div>
 </body>
@@ -62,12 +62,12 @@ async function requestAccessToken(code) {
 
   const credentials = btoa(`${clientId}:${clientSecret}`); // Base64 encode credentials
 
-  const tokenUrl = 'https://zoom.us/oauth/token';
-  const data = new URLSearchParams({
-    code: code,
-    grant_type: 'authorization_code',
-    redirect_uri: redirectUri
-  });
+  const tokenUrl = 'https://zoom.us/oauth/token?code=' + code + "&grant_type=authorization_code&redirect_uri" + redirectUri;
+//   const data = new URLSearchParams({
+//     code: code,
+//     grant_type: 'authorization_code',
+//     redirect_uri: redirectUri
+//   });
 
   try {
     const response = await fetch(tokenUrl, {
@@ -76,7 +76,7 @@ async function requestAccessToken(code) {
         'Authorization': `Basic ${credentials}`,
         'Content-Type': 'application/x-www-form-urlencoded'
       },
-      body: data
+    //   body: data
     });
 
     if (!response.ok) {
