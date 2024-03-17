@@ -4,7 +4,7 @@
   <title>Zoom Link</title>
 </head>
 <body>
-    <div>V11</div>
+    <div>V12</div>
   <button id="zoomLinkButton">Link with Zoom</button>
   <div id="userInfo"></div>
 </body>
@@ -34,8 +34,9 @@ function handleAuthorizationCode() {
 async function fetchZoomUserInfo(code) {
   // Placeholder: Securely exchange code for access token on your backend
   const accessToken = await exchangeCodeForToken(code); 
+  var response;
 
-    alert(accessToken);
+  alert(accessToken);
 
   await fetch('https://api.zoom.us/v2/users/me', {
     method: 'GET',
