@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Connecting...</title>
+  <script src="https://unpkg.com/@lottiefiles/lottie-player@latest/dist/lottie-player.js"></script>
+  <style>
+    body { 
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh; 
+      margin: 0; /* Reset default margins */
+    }
+  </style>
+</head>
+<body>
+  <lottie-player 
+    src="https://lottie.host/afb2c5b9-efa9-4d69-903d-15e42bad471a/IiqA6WZAK3.json" 
+    background="#fff"  
+    speed="1"  
+    style="width: 300px; height: 300px;"  
+    loop 
+    autoplay 
+    direction="1" 
+    mode="normal">
+  </lottie-player>
+</body>
+
+<script>
+    // const redirectUri = 'https://redstoneinvente.github.io/testingHosting/video%20streaming.html'; // Must match your Zoom app settings
+
+    // // Handle code returned from Zoom (example using URL query parameters)
+    // function handleAuthorizationCode() {
+    //         const urlParams = new URLSearchParams(window.location.search);
+    //         const code = urlParams.get('code');
+
+    //         if (code) {
+    //             fetchZoomUserInfo(code);
+    //         }
+    //     }
+
+    // async function fetchZoomUserInfo(code) {
+    //         // Placeholder: Securely exchange code for access token on your backend
+    //         const user = await exchangeCodeForToken(code); 
+            
+    //         displayUserInfo(user);
+    //     }
+
+    // async function displayUserInfo(data) {
+    //         const userZoomEmail = data.email;
+    //         const userZoomID = data.id;
+
+    //         const usersURL = "https://fscproject-c108d-default-rtdb.asia-southeast1.firebasedatabase.app/database/users.json";
+
+    //         showOverlay(document.getElementById("lottieoverlay"), "https://lottie.host/89f9c266-0467-44db-abd0-0939bbbf6a0d/ww8nnrDH3q.json", document.getElementById("player"));
+
+    //         var err = false;
+
+    //         const usersResponse = await fetch(usersURL);
+    //         const allUsers = await usersResponse.json() || [];
+
+    //         const inddex2 = allUsers.findIndex(person => person.userID === currentUser.userID);
+
+    //         var user = allUsers[inddex2];
+
+    //         const user1URL = "https://fscproject-c108d-default-rtdb.asia-southeast1.firebasedatabase.app/database/users/" + inddex2 + ".json";
+
+    //         user.zoomEmail = userZoomEmail;
+    //         user.zoomID = userZoomID;
+
+    //         await fetch(user1URL, {
+    //             method: 'PUT',
+    //             body: JSON.stringify(user)
+    //         });
+
+    //         linked = true;
+    //     }
+
+    // async function exchangeCodeForToken(code) {
+    //         const cloudFunctionUrl = 'https://us-central1-fscproject-c108d.cloudfunctions.net/codeToZoomAccessToken';
+    //         const fetchUrl = `${cloudFunctionUrl}?code=${code}&redirectUri=${redirectUri}`;
+
+    //         try {
+    //             const response = await fetch(fetchUrl);
+
+    //             if (!response.ok) {
+    //                 alert(`Error from Cloud Function: ${response.status}`);
+    //             }
+
+    //             const data = await response.json(); // Assuming it returns JSON
+
+    //             return data; 
+    //         } catch (error) {
+    //                 alert('Error exchanging code:', error); 
+    //             throw error; // Re-throw so you can handle it where you call this function
+    //         }
+    //     }
+
+    // // On page load, check if redirected back from Zoom with code
+    // handleAuthorizationCode(); 
+</script>
+</html>
