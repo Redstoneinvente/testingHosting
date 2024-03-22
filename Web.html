@@ -1,0 +1,1590 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Event Name Landing Page</title>
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons"
+    rel="stylesheet">
+    <script src="https://kit.fontawesome.com/67c7b6defc.js" crossorigin="anonymous"></script>
+    <!-- Add this script tag to include smtp.js -->
+    <script src="https://smtpjs.com/v3/smtp.js"></script>
+
+    <style> 
+    body {
+   font-family: 'Arial', sans-serif;
+   margin: 0;
+   padding: 0;
+   padding-left: 10px !important;
+   background-color: var(--background);
+   overflow-x: hidden; /* Hide horizontal overflow */
+   }
+
+ header {
+   background-color: var(--surface-container);
+   color: var(--on-surface);
+   padding: 20px;
+   text-align: center;
+ }
+
+ header img {
+   max-width: 100px;
+   height: auto;
+ }
+
+ main {
+   max-width: 800px;
+
+   margin-left: 27vw !important;
+   margin: 20px auto;
+
+   padding: 20px;
+   background-color: var(--surface);
+   box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+   border-radius: 20px;
+
+   transition: all var(--transitionSpeed) linear;
+   -webkit-transition: all var(--transitionSpeed) linear;
+   -moz-transition: all var(--transitionSpeed) linear;
+   -o-transition: all var(--transitionSpeed) linear;
+ }
+
+ .mainSide {
+   max-width: 800px !important;
+
+   margin-left: 2vw !important;
+
+   padding: 20px;
+   background-color: var(--surface);
+   box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+   border-radius: 20px;
+
+   transition: all var(--transitionSpeed) linear;
+   -webkit-transition: all var(--transitionSpeed) linear;
+   -moz-transition: all var(--transitionSpeed) linear;
+   -o-transition: all var(--transitionSpeed) linear;
+ }
+
+ .sidePanelHide {
+ position: fixed;
+ max-width: auto;
+ margin-right: -1000px; /* Adjust the width of your sidePanel */
+
+ left: auto;
+ right: -200px;
+
+ overflow: hidden;
+ padding: 20px;
+ background-color: var(--surface);
+ box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+ border-radius: 20px;
+ transition: all var(--transitionSpeed) linear;
+}
+
+.sidePanel {
+ position: fixed;
+ max-width: auto; /* Adjust the width of your sidePanel */
+ margin-right: 0;
+
+ left: auto;
+ right: 20px !important;
+
+ padding: 20px;
+ background-color: var(--surface);
+ box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+ border-radius: 20px;
+ transition: all var(--transitionSpeed) linear;
+}
+
+ .hero img {
+   width: 100%;
+   height: auto;
+   margin-bottom: 20px;
+   border-radius: 20px;
+ }
+
+ .im {
+   width: 100%;
+   height: auto;
+   margin-bottom: 20px;
+   border-radius: 20px;
+   background-image: url("https://static.vecteezy.com/system/resources/thumbnails/002/099/717/small_2x/mountain-beautiful-landscape-background-design-illustration-free-vector.jpg");
+
+   transition: all ease-in-out 250ms;
+ }
+
+ .port img {
+   display: block; 
+   margin-left: auto; 
+   margin-right: auto;
+ }
+
+ .port img {
+   width: 300px; 
+   height: 300px; 
+   object-fit: cover;
+ }
+
+ .promoI {
+   display: block; 
+   margin-left: auto; 
+   margin-right: auto;
+
+   width: 50%; 
+   height: 50%; 
+   object-fit: cover;
+ }
+
+ h1, h2, h3, h4 {
+   color: var(--on-surface);
+ }
+
+ .info {
+   display: flex;
+   justify-content: space-between;
+   margin-bottom: 20px;
+   margin-left: 1vh;
+ }
+
+ .info-item:last-child {
+   border-right: none; /* Remove the border from the last child */
+ }
+
+ .info-item {
+   flex: 1;
+   border-right: var(--outline-variant) 1px solid;
+
+   text-align: center;
+ }
+
+ .speakers {
+   margin-bottom: 20px;
+ }
+
+ .speaker {
+   display: flex;
+   align-items: center;
+   margin-bottom: 20px;
+   color: var(--on-surface);
+   /*background-color: mix(var(--surface-container-high), var(--surface-tint), var(--tint-opacity));*/
+   background-color: color-mix( in srgb, var(--surface-container-high) var(--tint-opacity), var(--surface-tint));
+   box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+   border-radius: 5px;
+ }
+
+ .speaker img {
+   border-radius: 50%;
+   margin-right: 20px;
+   margin-left: 20px;
+   max-width: 80px;
+   height: 80px;
+   object-fit: cover;
+ }
+
+ .speakersLearnMore {
+   border-radius: 50%;
+   max-width: 80px;
+   display: flex;
+   align-items: center;
+   height: 80px;
+   margin-left: auto;
+   margin-right: 20px;
+ }
+
+ .cta {
+   text-align: center;
+   padding: auto;
+ }
+
+ .cta a {
+   display: inline-block;
+   padding: 10px 20px;
+   background-color: var(--primary);
+   color: var(--on-primary);
+   text-decoration: none;
+   border-radius: 20px;
+
+   width: 95%;
+ }
+
+ .cta:hover {
+   border-radius: 20px;
+           background-color: var(--secondary) !important;
+           box-shadow: var(--shadow) 0px 0px 2px 1px;
+
+           transition: all 100ms linear;
+       }
+
+ .speakersPP img {
+   display: flex;
+   padding: auto;
+ }
+
+ .session-button {
+     display: inline-block;
+     padding: 10px 20px;
+     background-color: var(--secondary-container); /* Adjust color as needed */
+     color: var(--on-secondary-container);
+     text-decoration: none;
+     border-radius: 20px;
+     margin-right: 10px;
+     margin-bottom: 10px;
+     font-weight: 600 !important;
+     
+     -webkit-user-select: none; /* Safari */
+ -moz-user-select: none; /* Firefox */
+ -ms-user-select: none; /* Internet Explorer/Edge */
+ user-select: none;
+   }
+
+   .session-button:hover {
+           background-color: var(--on-secondary-container-a); /* Adjust color as needed */
+           box-shadow: var(--shadow) 0px 0px 2px 1px;
+           color: var(--on-secondary-container);
+
+           transition: all 100ms linear;
+       }
+
+   .material-icons { 
+       color: var(--on-surface-variant); 
+       -webkit-user-select: none; /* Safari */
+ -moz-user-select: none; /* Firefox */
+ -ms-user-select: none; /* Internet Explorer/Edge */
+ user-select: none;
+   }
+   .material-icons.md-48 { font-size: 20px; }
+   .material-icons.md-var { font-size: var(--iconsSize); }
+   .material-icons.md-readMore { font-size: var(--readMoreSize); }
+
+ footer {
+   text-align: center;
+   padding: 10px;
+   background-color: var(--surface-container); /* Keeping the original color for footer background */
+   color: var(--on-surface);
+   position: relative;
+   bottom: 0;
+   width: 100%;
+ }
+
+ .carousel-container {
+   display: flex;
+   width: 800px;
+   height: 400px;
+   object-fit: cover;
+   overflow: hidden;
+
+   filter: opacity(1);
+   }
+
+   .carousel-slide {
+   min-width: 100%;
+   transition: transform 0.5s ease-in-out;
+   }
+ 
+   .headerImg img {
+       width: 800px;
+       height: 400px;
+       object-fit: cover;
+
+   }
+   
+   .expandable-text {
+       overflow: hidden;
+       max-height: 100px; /* Set the initial height or any value that suits your design */
+       cursor: pointer;
+       transition: all 700ms linear;
+
+   }
+
+   .expanded {
+       max-height: fit-content !important; /* Set this to 'none' to allow full expansion */
+       transition: all 700ms linear;
+   }
+
+   .social-icons {
+   display: flex;
+   justify-content: center;  /* Center the content horizontally */
+   align-items: center;
+   gap: 50px;
+}
+
+   .social-icon {
+       display: flex;
+       align-items: center;
+       justify-content: center;
+       font-size: 24px;
+       border-radius: 50%;
+       text-decoration: none;
+       color: var(--on-surface-variant-a);
+       transition: color 0.2s ease-in-out;
+   }
+
+   .social-icon:hover {
+       color: var(--primary);
+   }
+
+   .popup {
+     z-index: 100;
+   display: none;
+   position: fixed;
+   top: 0;
+   left: 0;
+   width: 100%;
+   height: 100%;
+   background-color: rgba(0, 0, 0, 0.5);
+   justify-content: center;
+   align-items: center;
+}
+
+.popup-content {
+   background-color: #fff;
+   padding: 20px;
+   border-radius: 5px;
+   width: 500px;
+   height: 650px;
+   box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+}
+
+.close {
+   position: absolute;
+   top: 10px;
+   right: 10px;
+   cursor: pointer;
+   font-size: 20px;
+}
+
+form {
+   display: flex;
+   flex-direction: column;
+   gap: 10px;
+}
+
+input {
+ height: 30px;
+ background-color: var(--surface);
+
+}
+
+button {
+   background-color: var(--primary);
+   color: white;
+   border: none;
+   padding: 10px;
+   cursor: pointer;
+   border-radius: 5px;
+}
+
+.cta_disabled {
+   text-align: center;
+   padding: auto;
+   pointer-events: none; 
+   opacity: 0.5;
+ }
+
+ .cta_disabled a {
+   display: inline-block;
+   padding: 10px 20px;
+   background-color: var(--on-surface);
+   color: var(--on-primary);
+   text-decoration: none;
+   border-radius: 20px;
+   pointer-events: none; 
+   opacity: 0.5;
+
+   width: 95%;
+ }
+
+.container {
+ display: flex;
+ flex-direction: column; /* Stack boxes vertically */
+ align-items: center;    /* Center horizontally */
+ gap: 10px;              /* Space between boxes */
+}
+
+.box {
+ width: 200px;
+ padding: 20px;
+ text-align: center;
+ border: 2px solid #ccc;
+ cursor: pointer;
+ user-select: none;      /* Prevent accidental text selection */
+}
+
+.box.selected {
+ background-color: var(--primary-fixed); /* Highlight selected option */
+ border-color: var(--outline-variant);     /* Or a more prominent border color */
+}
+
+.disabled-box {
+ background-color: var(--outline); /* Highlight selected option */
+ border-color: var(--outline-variant);     /* Or a more prominent border color */
+}
+
+/* Overlay to darken the background */
+.lottie-overlay {
+ position: fixed;      /* Stay in place */
+ top: 0;
+ left: 0;
+ width: 100%;          /* Cover the whole screen */
+ height: 100%;
+ background-color: rgba(0, 0, 0, 0.466); /* Black with 70% opacity */
+ z-index: 1000;        /* Ensure it's on top of other elements */
+}
+
+/* The Lottie player itself */
+lottie-player {
+ position: fixed;
+ top: 50%;
+ left: 50%;
+ transform: translate(-50%, -50%); /* Center the animation */
+ width: 100vw;   /* Full viewport width */
+ height: 100vh;  /* Full viewport height */
+ z-index: 1001;  /* On top of the overlay */
+}
+
+/* Prevent interactions with anything under the overlay*/
+.lottie-overlay,
+.lottie-overlay * { 
+ pointer-events: none; 
+}
+
+:root {
+      --primary: rgb(101 85 143);
+      --surface-tint: rgb(101 85 143);
+      --on-primary: rgb(255 255 255);
+      --primary-container: rgb(233 221 255);
+      --on-primary-container: rgb(32 16 71);
+      --secondary: rgb(98 91 113);
+      --on-secondary: rgb(255 255 255);
+      --secondary-container: rgb(232 222 248);
+      --on-secondary-container: rgb(30 25 43);
+      --on-secondary-container-a: rgba(30 25 43 0.08);
+      --tertiary: rgb(126 82 96);
+      --on-tertiary: rgb(255 255 255);
+      --tertiary-container: rgb(255 217 227);
+      --on-tertiary-container: rgb(49 16 29);
+      --error: rgb(186 26 26);
+      --on-error: rgb(255 255 255);
+      --error-container: rgb(255 218 214);
+      --on-error-container: rgb(65 0 2);
+      --background: rgb(253 247 255);
+      --on-background: rgb(29 27 32);
+      --surface: rgb(253 247 255);
+      --on-surface: rgb(29 27 32);
+      --surface-variant: rgb(231 224 235);
+      --on-surface-variant: rgb(73 69 78);
+      --on-surface-variant-a: rgba(73 69 78 0.08);
+      --outline: rgb(122 117 127);
+      --outline-variant: rgb(202 196 207);
+      --shadow: rgb(0 0 0);
+      --scrim: rgb(0 0 0);
+      --inverse-surface: rgb(50 47 53);
+      --inverse-on-surface: rgb(245 239 247);
+      --inverse-primary: <<--inverse-primary:>>;
+      --primary-fixed: rgb(233 221 255);
+      --on-primary-fixed: rgb(32 16 71);
+      --primary-fixed-dim: <<--inverse-primary:>>;
+      --on-primary-fixed-variant: <<--on-primary-fixed-variant:>>;
+      --secondary-fixed: rgb(232 222 248);
+      --on-secondary-fixed: rgb(30 25 43);
+      --secondary-fixed-dim: <<--secondary-fixed-dim:>>;
+      --on-secondary-fixed-variant: <<--on-secondary-fixed-variant:>>;
+      --tertiary-fixed: rgb(255 217 227);
+      --on-tertiary-fixed: rgb(49 16 29);
+      --tertiary-fixed-dim: <<--tertiary-fixed-dim:>>;
+      --on-tertiary-fixed-variant: <<--on-tertiary-fixed-variant:>>;
+      --surface-dim: <<--surface-dim:>>;
+      --surface-bright: rgb(253 247 255);
+      --surface-container-lowest: rgb(255 255 255);
+      --surface-container-low: <<--surface-container-low:>>;
+      --surface-container: <<--surface-container:>>;
+      --surface-container-high: <<--surface-container-high:>>;
+      --surface-container-highest: <<--surface-container-highest:>>;
+    --tint-opacity: 87%;
+    --iconsSize: 10px;
+    --readMoreSize: 30px;
+    --transitionSpeed: 100ms;
+  }
+</style>
+
+    <script>
+    var isMainAreaSlided = false;
+    var speakers = false;
+    var main = false;
+  
+    var mainEventImg = "https://images.pexels.com/photos/552789/pexels-photo-552789.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2";
+  
+    var lastId = "";
+  
+    var logos = [
+      "https://firebasestorage.googleapis.com/v0/b/fscproject-c108d.appspot.com/o/logo1.png?alt=media",
+
+    ]
+  
+    var sessionsImgs = [
+        "https://firebasestorage.googleapis.com/v0/b/fscproject-c108d.appspot.com/o/logo1.png?alt=media",
+"https://firebasestorage.googleapis.com/v0/b/fscproject-c108d.appspot.com/o/logo1.png?alt=media",
+
+    ];
+  
+    var profileImgs = [
+        "https://firebasestorage.googleapis.com/v0/b/fscproject-c108d.appspot.com/o/logo1.png?alt=media",
+
+    ];
+  
+    var sessionNames = [
+        "Session 1",
+"Session 2",
+
+    ];
+  
+    var speakerNames = [
+        "Pranav",
+
+    ];
+  
+    var sessionDesc = [
+        "s1",
+"s2",
+
+    ]
+  
+    var speakerDesc = [
+        "bio",
+
+    ]
+  
+    const arrays = [
+        [profileImgs[0],],
+[profileImgs[0],],
+[profileImgs[3],],
+
+    ];
+  
+    var sessionDates = [
+          "22 March 2024
+America/Nome",
+"23 March 2024
+America/Nome",
+
+    ];
+  
+    var speakerBioShort = [
+        "Mr",
+
+    ];
+  
+    var imgsSpawned = [];
+  
+    var lastIDNAme = "";
+    var lastSpkName = "";
+  
+    var selectedTicketType = "";
+  
+    var eventIndex = 1;
+  
+    var maxPhysical = 0;
+    var maxVirtual = 0;
+  
+    var userExist = false;
+  
+    var userIDSelected = '';
+  
+    const apiKey = 'AIzaSyCaGwf9P4U0nsRLxjSusYJowblwHJExszc';
+  
+    // Specify the IDs of all your side panels here
+    const sidePanelIds = ["side", "sideSpeak", "registrationPopup"]; 
+  
+    function toggleMainClass(idName, index) {
+      if(lastIDNAme == idName){
+        togglePanel("side");
+      }
+  
+      if(lastIDNAme == ""){
+        togglePanel("side");
+      }
+  
+      lastIDNAme = idName;
+    
+    var targetImage = document.getElementById("sessionImg");
+    var targetName = document.getElementById("sessionName");
+    var targetDesc = document.getElementById("sessionDesc");
+  
+    targetImage.src = sessionsImgs[index];
+    targetName.innerText = sessionNames[index]; 
+    targetDesc.innerText = sessionDesc[index];
+  
+    const targetArray = arrays[index];
+  
+    imgsSpawned.forEach(element => {
+        element.remove();
+    });
+  
+    imgsSpawned = [];
+  
+    // Loop through elements in the array and spawn images
+    targetArray.forEach(value => {
+        const img = document.createElement('img');
+        img.src = value; // Assuming the array contains image URLs
+        img.alt = 'Description'; // You can customize the alt text
+        
+        img.style.width = '50px';
+        img.style.height = '50px';
+        img.style.borderRadius = '50%';
+  
+        img.style.padding = '6px';
+  
+        imgsSpawned.push(img);
+        document.getElementById('speakersPP').appendChild(img); // Append the image to the body (you can change the target element)
+    });
+  
+    lastId = idName;
+    main = !main;
+    }
+  
+    function toggleSpeakers(idName, index) {
+  
+    if(lastSpkName == idName || lastSpkName == ""){
+      togglePanel("sideSpeak");
+    }
+  
+    lastSpkName = idName;
+  
+    var targetImage = document.getElementById("profilImg");
+    var targetNameS = document.getElementById("speakerName");
+    var targetDescS = document.getElementById("speakerDesc");
+  
+    targetImage.src = profileImgs[index];
+    targetNameS.innerText = speakerNames[index];
+    targetDescS.innerText = speakerDesc[index];
+    }
+  
+    document.addEventListener("DOMContentLoaded", function () {
+        const carouselContainer = document.querySelector('.carousel-container');
+        var imgToSwitch = document.getElementById("mainBg");
+        //var imgToSwitch = document.getElementById("im");
+        let currentIndex = 0;
+  
+        function showSlide(index) {
+            //const offset = -index * 100;
+            //carouselContainer.style.transform = `translateX(${offset}%)`;
+            currentIndex = index > sessionsImgs.length - 1 ? 0 : index + 1;
+        }
+  
+        function nextSlide() {
+            //currentIndex = (currentIndex + 1) % document.querySelectorAll('.carousel-slide').length;
+            imgToSwitch.src = currentIndex == sessionsImgs.length ? mainEventImg : sessionsImgs[currentIndex]; 
+  
+            showSlide(currentIndex);
+            trans();
+  
+        }
+  
+        function prevSlide() {
+            //currentIndex = (currentIndex - 1 + document.querySelectorAll('.carousel-slide').length) % document.querySelectorAll('.carousel-slide').length;
+            imgToSwitch.src = currentIndex == sessionsImgs.length ? mainEventImg : sessionsImgs[currentIndex]; 
+            showSlide(currentIndex);
+            trans();
+        }
+  
+        setInterval(nextSlide, 3000); // Auto-advance every 3 seconds
+    });
+  
+    document.addEventListener("DOMContentLoaded", function () {
+        var imgToSwitch2 = document.getElementById("mainLogo");
+        //var imgToSwitch = document.getElementById("im");
+        let currentIndex1 = 1;
+  
+        function showSlide1(index) {
+            //const offset = -index * 100;
+            //carouselContainer.style.transform = `translateX(${offset}%)`;
+            currentIndex1 = index + 1 >= logos.length  ? 0 : index + 1;
+        }
+  
+        function nextSlide1() {
+            //currentIndex = (currentIndex + 1) % document.querySelectorAll('.carousel-slide').length;
+            imgToSwitch2.src = logos[currentIndex1]; 
+  
+            showSlide1(currentIndex1);
+            //trans();
+  
+        }
+  
+        setInterval(nextSlide1, 1500); // Auto-advance every 3 seconds
+    });
+  
+    function toggleExpand() {
+        var expandableText = document.querySelector('.expandable-text');
+        expandableText.classList.toggle('expanded');
+    }
+  
+    // Functions to show/hide the overlay
+    function showOverlay(overlay) {
+    // Get references to the overlay and the body
+    //const overlay = document.getElementById("lottieoverlay"); 
+    const body = document.body;
+  
+    overlay.style.display = "block";
+    body.style.pointerEvents = "none"; // Disable interactions when the overlay is up
+    }
+  
+    function hideOverlay(overlay) {
+    // Get references to the overlay and the body
+    //const overlay = document.getElementById("lottieoverlay"); 
+    const body = document.body;
+  
+    overlay.style.display = "none";
+    body.style.pointerEvents = "auto"; // Re-enable interactions
+    }
+  
+    function togglePanel(targetPanelId) {
+        const mainElement = document.getElementById("mainElement");
+  
+        // Hide any other side panels
+        sidePanelIds.forEach(panelId => {
+            if (panelId !== targetPanelId) {
+                const panel = document.getElementById(panelId);
+                if (panel) {
+                    panel.classList.add("sidePanelHide");
+                    panel.classList.remove("sidePanel"); 
+                }
+            }
+        });
+  
+        // Toggle the visibility of the target panel 
+        const targetPanel = document.getElementById(targetPanelId);
+        if (targetPanel) {
+            targetPanel.classList.toggle("sidePanelHide");
+            targetPanel.classList.toggle("sidePanel"); 
+        }
+  
+        // Toggle mainElement class if no side panels are open
+        const anyPanelsOpen = sidePanelIds.some(id => {
+            const panel = document.getElementById(id);
+            return panel && !panel.classList.contains("sidePanelHide");
+        });
+  
+        if (anyPanelsOpen) {
+            mainElement.classList.add("mainSide");
+        } else {
+            mainElement.classList.remove("mainSide");
+        }
+  
+        // ... Your remaining logic for updating content, handling isMainAreaSlided, etc ...
+    }
+  
+    function openPopup(idName, index) {
+  
+    }
+  
+    function closePopup() {
+        // document.getElementById('registrationPopup').style.display = 'none';
+    }
+  
+    function checkUser() {
+        showOverlay(document.getElementById("lottieoverlay"));
+        const emailInput = document.getElementById('email').value;
+        const nameInput = document.getElementById('name');
+  
+        // Use the emailInput to check if the user exists in the Firebase database
+        const usersURL = 'https://fscproject-c108d-default-rtdb.asia-southeast1.firebasedatabase.app/database/users.json';
+        const requestURL = `${usersURL}?orderBy="email"&equalTo="${emailInput}"`;
+  
+        fetch(usersURL)
+            .then(response => response.json())
+            .then(data => {
+                // Convert the response JSON to an object
+                const usersData = Object.values(data);
+  
+                // Find the user based on the provided email
+                const user = usersData.find(user => user.email === emailInput);
+  
+                if (user) {
+                    // User exists, update the 'name' field in the form
+                    nameInput.value = user.name;
+                    nameInput.style.filter = "brightness(80%)"; 
+                    nameInput.setAttribute('readonly', 'true'); // Prevent modification of the name
+                    userIDSelected = user.userID;
+  
+                    userExist = true;
+                } else {
+                    nameInput.style.filter = "brightness(100%)"; 
+                    nameInput.removeAttribute('readonly'); 
+                    //alert('User not found. Please register.');
+  
+                    userIDSelected = '';
+                    userExist = false;
+                }
+            })
+        .catch(error => console.error('Error fetching user data:', error));
+  
+        // ... Find the user based on the provided email ...
+  
+        // Use the emailInput to check if the user exists in the Firebase database
+        const attendeesURL = 'https://fscproject-c108d-default-rtdb.asia-southeast1.firebasedatabase.app/database/events/' + eventIndex + '/attendees.json';
+        const requestURLA = `${attendeesURL}?orderBy="email"&equalTo="${nameInput}"`;
+  
+        fetch(attendeesURL)
+            .then(response => response.json())
+            .then(data => {
+                // Convert the response JSON to an object
+                const usersData = data === undefined ? [] : Object.values(data) || [];
+  
+                // Find the user based on the provided email
+                const user = usersData.includes(userIDSelected);
+  
+                //alert(usersData[1]);
+  
+                const registerButton = document.getElementById('registerButton'); // Get the button
+                const registerButtonHolder = document.getElementById('registerCTA');
+  
+                if (user) {
+                    // ... (Your existing code to update the name field) ...
+  
+                    // Disable button and change text
+                    registerButton.disabled = true;
+                    registerButton.textContent = 'Already Registered';
+  
+                    registerButtonHolder.classList.remove('cta');
+                    registerButtonHolder.classList.add('cta_disabled');
+                } else {
+                    // ... (Your existing code) ...
+  
+                    // Enable button and reset text
+                    registerButton.disabled = false;
+                    registerButton.textContent = 'Register to event'; 
+  
+                    registerButtonHolder.classList.add('cta');
+                    registerButtonHolder.classList.remove('cta_disabled');
+                }
+            })
+        .catch(error => console.error('Error fetching user data:', error));
+        
+        hideOverlay(document.getElementById("lottieoverlay"));
+    }
+  
+    function registerUser() {
+        showOverlay(document.getElementById("lottieoverlay"));
+  
+        const emailInput = document.getElementById('email').value;
+        const nameInput = document.getElementById('name').value;
+  
+        if (userExist == false) {
+          createUser(emailInput, nameInput, nameInput + '1234567');
+        }
+        else{
+          removeTicketAndAddAttendee(selectedTicketType, userIDSelected);
+        }
+  
+        // Use the emailInput and nameInput to register the user in the Firebase database
+        const usersURL = 'https://fscproject-c108d-default-rtdb.asia-southeast1.firebasedatabase.app/database/users.json';
+    }
+  
+    function doNothing(){
+    event.stopPropagation();
+    }
+  
+    function sendRegistrationEmail(email, name) {
+        // Your email configuration
+        const emailConfig = {
+        host: 'smtp.elasticemail.com',         // Outlook SMTP server
+            username: 'pgowardun@gmail.com', // Your Outlook email address
+            password: '2AC23AD8318EE716D4F0F5CF4AD7AE3F387F',          // Your Outlook email password
+            secure: true,                          // Use SSL (true for SSL, false for TLS)
+            port: 2525,                             // Outlook SMTP port (587 for TLS)
+            fromEmail: 'rdotzip@gmail.com',   // Your Outlook email address
+            toEmail: email,
+            subject: 'Registration Confirmation',
+            body: `Dear ${name},\n\n this is a test email`
+        };
+  
+        // Send the email using smtp.js
+        Email.send({
+            Host: emailConfig.host,
+            Username: emailConfig.username,
+            Password: emailConfig.password,
+            Secure: emailConfig.secure,
+            Port: emailConfig.port,
+            To: emailConfig.toEmail,
+            From: emailConfig.fromEmail,
+            Subject: emailConfig.subject,
+            Body: emailConfig.body
+        }).then(
+            message => console.log('Email sent successfully:', message),
+            error => console.error('Error sending email:', error),
+  
+            closePopup()
+        );
+    }
+    
+    function selectBox (event, boxesContainer) {
+      const box = event.target; 
+  
+      if (event.target.classList.contains('box') && (box.dataset.option == 'virtual' ? minSelectedV > 0 : minSelectedP > 0) && selectedSessions.length > 0) { // Check if clicked element is a box
+        //alert(box.id);
+  
+        // Remove 'selected' class from any previously selected box
+          const previouslySelected = boxesContainer.querySelector('.selected');
+          if (previouslySelected) {
+          previouslySelected.classList.remove('selected');
+          }
+  
+          // Add 'selected' class to the clicked box
+          box.classList.add('selected');
+  
+          // Get the selected option
+          selectedTicketType = box.dataset.option;
+          console.log("Selected Option:", selectedTicketType);
+      }
+    }
+  
+    function createUser(email, username, password) {
+    const data = {
+        email: email,
+        password: password,
+        returnSecureToken: true // Important for getting an ID token
+    };
+  
+    fetch('https://identitytoolkit.googleapis.com/v1/accounts:signUp?key=' + apiKey, {
+        method: 'POST',
+        body: JSON.stringify(data)
+        })
+        .then(response => response.json())
+        .then(data => {
+        if (data.idToken) {
+            changeUsername(data.idToken, username);
+            createUserDB(email, username, data.localId, 4);
+            removeTicketAndAddAttendee(selectedTicketType, data.localId);
+            console.log('User created:', data);
+            // ... Store token, redirect, etc.
+        } else {
+            console.error('Error:', data.error);
+        }
+        })
+        .catch(error => console.error(error));
+    }
+  
+    function changeUsername(idToken, newUsername) {
+    const data = {
+        idToken: idToken,
+        displayName: newUsername,
+        photoUrl: '',
+        returnSecureToken: true 
+    };
+  
+    fetch('https://identitytoolkit.googleapis.com/v1/accounts:update?key=' + apiKey, {
+        method: 'POST',
+        body: JSON.stringify(data)
+        })
+        .then(response => response.json())
+        .then(data => {
+        console.log('User profile updated:', data);
+        })
+        .catch(error => console.error(error));
+    }
+  
+    function getUserCount() {
+        return fetch('https://fscproject-c108d-default-rtdb.asia-southeast1.firebasedatabase.app/database/users.json')
+            .then(response => response.json())
+            .then(data => Object.keys(data).length) 
+            .catch(error => console.error('Error fetching user count:', error));
+    }
+  
+    function calculateElapsedDays(startDate, endDate) {
+    // Ensure the dates are valid Date objects
+    const start = new Date(startDate);
+    const end = new Date(endDate);
+  
+    // Calculate difference in milliseconds
+    const differenceInMs = end.getTime() - start.getTime();
+  
+    // Convert milliseconds to days (1 day = 24 hours * 60 minutes * 60 seconds * 1000 milliseconds)
+    const differenceInDays = differenceInMs / (1000 * 60 * 60 * 24);
+  
+    // Round down to get whole days
+    const elapsedDays = Math.floor(differenceInDays);
+  
+    return elapsedDays;
+    }
+  
+    // Attendance Class
+    class Attendance {
+    constructor(maxDays) {
+        this.maxDays = maxDays;
+        this.attendence = new Array(maxDays).fill(-1); // Initialize with -1
+    }
+  
+    setPresent(day, present) {
+        if (day < this.maxDays) {
+        this.attendance[day] = present; 
+        }
+    }
+  
+    getPresence(day) {
+        if (day < this.maxDays) {
+        return this.attendance[day] === 1;
+        }
+        return false;
+    }
+    }
+  
+    async function createUserDB(email, name, userID, userType) {
+        const userCount = await getUserCount(); 
+        const index = userCount; 
+  
+        const userData = {
+            email: email,
+            name: name,
+            userID: userID,
+            userType: userType
+        };
+  
+        return fetch(`https://fscproject-c108d-default-rtdb.asia-southeast1.firebasedatabase.app/database/users/${index}.json`, {
+                method: 'PUT', // Use PUT for creating data at a specific location
+                body: JSON.stringify(userData)
+            })
+            .then(response => {
+                if (response.ok) {
+                    console.log("User created successfully");
+                } else {
+                    throw new Error("Error creating user");
+                }
+            })
+            .catch(error => console.error('Error creating user:', error));
+    }
+  
+    function getPathTickets(isPhysicalTicket, eventIndex, sessionIndex){
+      return isPhysicalTicket 
+                        ? '/database/events/' + eventIndex + '/sessions/' + sessionIndex + '/ticketing/physicalTickets'
+                        : '/database/events/' + eventIndex + '/sessions/' + sessionIndex + '/ticketing/virtualTickets';     
+    }
+  
+    function findIndices(A1, A2) {
+      const A3 = []; // Initialize the result array
+  
+      for (let i = 0; i < A2.length; i++) {
+        const element = A2[i];
+  
+        for (let index = 0; index < A1.length; index++) {
+          // Check if sessionName exists in A1 and matches the element
+          if (A1[index].sessionName === element) { 
+            A3.push(index); // Push the index from A2 
+          }
+        }
+      }
+  
+      return A3;
+    }
+    
+    async function removeTicketAndAddAttendee(ticketType, attendeeName, email) {
+    const isPhysicalTicket = (ticketType === 'physical'); 
+    
+    if((isPhysicalTicket && minSelectedP <= 0) || (!isPhysicalTicket && minSelectedV <= 0) || (selectedSessions.length <= 0)) {
+      alert("Ticket option not available! Please choose another option.");
+      hideOverlay(document.getElementById("lottieoverlay"));
+      return;
+    }
+  
+    const ticketPath = isPhysicalTicket 
+                        ? '/database/events/' + eventIndex + '/ticketing/maxPhysicalTickets'
+                        : '/database/events/' + eventIndex + '/ticketing/maxVirtualTickets';
+  
+    const ticketPathS = isPhysicalTicket 
+                        ? '/database/events/' + eventIndex + '/physicalTickets'
+                        : '/database/events/' + eventIndex + '/virtualTickets';                    
+  
+    const eventResponse = await fetch('https://fscproject-c108d-default-rtdb.asia-southeast1.firebasedatabase.app/database/events/' + eventIndex + '.json');
+    const eventObj = await eventResponse.json();
+  
+    const sessions = eventObj.sessions;
+  
+    var indexesForSessions = findIndices(sessions, selectedSessions);
+  
+    // 4. Add Attendee (Appending to Array)
+    const attendeesResponse = await fetch('https://fscproject-c108d-default-rtdb.asia-southeast1.firebasedatabase.app/database/events/' + eventIndex + '/attendees.json');
+    const attendees = await attendeesResponse.json() || []; // Handle empty case
+  
+    const presenceResponse = await fetch('https://fscproject-c108d-default-rtdb.asia-southeast1.firebasedatabase.app/database/events/' + eventIndex + '/attendences.json');
+    const presences = await presenceResponse.json() || [];
+  
+    const pointsResponse = await fetch('https://fscproject-c108d-default-rtdb.asia-southeast1.firebasedatabase.app/database/events/' + eventIndex + '/points.json');
+    var points = await pointsResponse.json() || [];
+  
+    attendees.push(attendeeName); // Add to the end of the array
+    points.push(0);
+
+    if(!eventObj.certificates) {
+      eventObj.certificates = [];
+    }
+
+    eventObj.certificates.push(new CertificateIssuer(false, false, false));
+  
+    for (let i = 0; i < indexesForSessions.length; i++) {
+      const indexSelected = indexesForSessions[i];
+  
+      var ticketPathSec = getPathTickets(isPhysicalTicket, eventIndex, indexSelected);
+  
+      // 1. Get Current Ticket Count 
+      const bookedResponse = await fetch('https://fscproject-c108d-default-rtdb.asia-southeast1.firebasedatabase.app' + ticketPathSec + '.json');
+      var bookedCount = await bookedResponse.json() || [];
+  
+      bookedCount.push(attendeeName);
+  
+      await fetch('https://fscproject-c108d-default-rtdb.asia-southeast1.firebasedatabase.app' + ticketPathSec + '.json', {
+          method: 'PUT', // Use PUT to overwrite the entire array
+          body: JSON.stringify(bookedCount)
+      });
+    }
+  
+    await fetch('https://fscproject-c108d-default-rtdb.asia-southeast1.firebasedatabase.app/database/events/' + eventIndex + '/attendees.json', {
+        method: 'PUT', // Use PUT to overwrite the entire array
+        body: JSON.stringify(attendees)
+    });
+
+    await fetch('https://fscproject-c108d-default-rtdb.asia-southeast1.firebasedatabase.app/database/events/' + eventIndex + '/certificates.json', {
+        method: 'PUT', // Use PUT to overwrite the entire array
+        body: JSON.stringify(eventObj.certificates)
+    });
+  
+    const startDateResponse = await fetch('https://fscproject-c108d-default-rtdb.asia-southeast1.firebasedatabase.app/database/events/' + eventIndex + '/startDate.json');
+    const startD = await startDateResponse.json() || today.toLocaleDateString();
+  
+    const startDate = new Date(startD);
+  
+    const endDateResponse = await fetch('https://fscproject-c108d-default-rtdb.asia-southeast1.firebasedatabase.app/database/events/' + eventIndex + '/endDate.json');
+    const endD = await endDateResponse.json() || today.toLocaleDateString();
+  
+    const endDate = new Date(endD);
+  
+    // Assuming you have 'calculateElapsedDays' to get the number of days 
+    // presences.push(new Attendance(calculateElapsedDays(startDate, endDate))); 
+    presences.push(new Attendance(calculateDifference(startDate, endDate))); 
+  
+    await fetch('https://fscproject-c108d-default-rtdb.asia-southeast1.firebasedatabase.app/database/events/' + eventIndex + '/attendences.json', {
+        method: 'PUT', // Use PUT to overwrite the entire array
+        body: JSON.stringify(presences)
+    });
+  
+    await fetch('https://fscproject-c108d-default-rtdb.asia-southeast1.firebasedatabase.app/database/events/' + eventIndex + '/points.json', {
+        method: 'PUT', // Use PUT to overwrite the entire array
+        body: JSON.stringify(points)
+    });
+  
+    hideOverlay(document.getElementById("lottieoverlay"));
+    // alert("You were registered to the event!");
+    await delay(50);
+    showOverlay(document.getElementById("successRegistration"));
+    await delay(5000);
+    hideOverlay(document.getElementById("successRegistration"));
+  
+    sendRegistrationEmail(email, attendeeName);
+    }
+  
+    async function delay(ms) {
+    return new Promise(resolve => setTimeout(resolve, ms));
+    }
+
+    class CertificateIssuer {
+      CertificateIssuer(isError, issued, reported){
+        this.isError = isError;
+        this.issued = issued;
+        this.reported = reported;
+      }
+    }
+  
+    function calculateDifference(date1, date2) {
+              // Ensure date2 is later than date 1 for a positive difference
+              if (date1 > date2) {
+                  [date1, date2] = [date2, date1]; // Swap dates
+              } 
+  
+              // Copy dates and set time to midnight for both 
+              const date1Copy = new Date(date1.getTime());
+              date1Copy.setHours(0, 0, 0, 0);
+  
+              const date2Copy = new Date(date2.getTime());
+              date2Copy.setHours(0, 0, 0, 0);
+  
+              // Calculate difference in milliseconds using the copies
+              const differenceInMs = date2Copy.getTime() - date1Copy.getTime();
+  
+              // Convert milliseconds to days
+              const differenceInDays = Math.floor(differenceInMs / (1000 * 60 * 60 * 24));
+  
+              return (isNaN(differenceInDays) ? 0 : differenceInDays) + 1;
+      }
+  
+    //hideOverlay(document.getElementById("successRegistration"));
+    
+    function generateInfo() {
+        //hideOverlay(document.getElementById("successRegistration"));
+  
+        var infoContainer = document.getElementById('sessionInfo');
+  
+        for (var i = 0; i < sessionNames.length; i++) {
+            createSessionBox(sessionNames[i]);
+  
+            var div = document.createElement('div');
+            div.className = 'info-item';
+            div.innerHTML = `
+                <h3>${sessionNames[i]}</h3>
+                <p>${sessionDates[i]}</p>
+                <a class="session-button" onclick="toggleMainClass('${sessionNames[i]}', ${i})">Learn More</a>
+            `;
+            infoContainer.appendChild(div);
+        }
+  
+        var speakerContainer = document.getElementById('speakersView');
+  
+        for (var i = 0; i < speakerNames.length; i++) {
+            var speakerDiv = document.createElement('div');
+            speakerDiv.className = 'speaker';
+            speakerDiv.id = 'speaker_' + speakerNames[i];
+            speakerDiv.setAttribute('onclick', "toggleSpeakers('" + speakerNames[i] + "', " + i + ")");
+  
+            var img = document.createElement('img');
+            img.src = profileImgs[i];
+            img.alt = speakerNames[i];
+  
+            var div1 = document.createElement('div');
+            div1.innerHTML = `
+                <h4>${speakerNames[i]}</h4>
+                <p>${speakerBioShort[i]}</p>
+            `;
+  
+            var div2 = document.createElement('div');
+            div2.className = 'speakersLearnMore';
+            var span = document.createElement('span');
+            span.className = 'material-icons md-readMore';
+            span.textContent = 'read_more';
+            div2.appendChild(span);
+  
+            // Append elements to the speaker div
+            speakerDiv.appendChild(img);
+            speakerDiv.appendChild(div1);
+            speakerDiv.appendChild(div2);
+  
+            // Append the speaker div to the container
+            speakerContainer.appendChild(speakerDiv);
+        }
+  
+        hideOverlay(document.getElementById("lottieoverlay"));
+        hideOverlay(document.getElementById("successRegistration"));
+    }
+  
+    function trans(){}
+  
+    window.addEventListener('DOMContentLoaded', (event) => {
+      // const boxesContainer = document.querySelector('.container-horizontal'); // Get the container of boxes
+      const boxesContainer = document.querySelector('.container-horizontal');
+      // const boxesContainerP = document.getElementById('box physical');
+  
+      boxesContainer.addEventListener('click', (event) => {
+        selectBox(event, boxesContainer);
+      });
+  
+      // Call the function to update options initially
+      updateTicketOptions();
+  
+      // Optionally, set an interval to periodically update options:
+      //setInterval(updateTicketOptions, 1000); // Update every minute
+    });
+  
+    function fetchAvailability(url) {
+      return fetch(url)
+        .then(response => response.json())
+        .catch(error => console.error("Error fetching data:", error));
+    }
+  
+    async function getAvailability() {
+      maxPhysical = await fetchAvailability("https://fscproject-c108d-default-rtdb.asia-southeast1.firebasedatabase.app/database/events/" + eventIndex + "/ticketing/maxPhysicalTickets.json");
+      maxVirtual = await fetchAvailability("https://fscproject-c108d-default-rtdb.asia-southeast1.firebasedatabase.app/database/events/" + eventIndex + "/ticketing/maxVirtualTickets.json");
+  
+      const virtualBookedResponse = await fetch("https://fscproject-c108d-default-rtdb.asia-southeast1.firebasedatabase.app/database/events/" + eventIndex + "/ticketing/virtualTickets.json");
+      const virtualBookedArray = await virtualBookedResponse.json() || [];
+      const virtualBooked = virtualBookedArray.length;
+  
+      const physicalBookedResponse = await fetch("https://fscproject-c108d-default-rtdb.asia-southeast1.firebasedatabase.app/database/events/" + eventIndex + "/ticketing/physicalTickets.json");
+      const physicalBookedArray = await physicalBookedResponse.json() || [];
+      const physicalBooked = physicalBookedArray.length;
+  
+      maxVirtual = maxVirtual - virtualBooked;
+      maxPhysical = maxPhysical - physicalBooked;
+  
+      return { maxPhysical, maxVirtual};
+    }
+  
+    async function getAvailability(sessionIndex) {
+      maxPhysical = await fetchAvailability("https://fscproject-c108d-default-rtdb.asia-southeast1.firebasedatabase.app/database/events/" + eventIndex + "/ticketing/maxPhysicalTickets.json");
+      maxVirtual = await fetchAvailability("https://fscproject-c108d-default-rtdb.asia-southeast1.firebasedatabase.app/database/events/" + eventIndex + "/ticketing/maxVirtualTickets.json");
+  
+      const virtualBookedResponse = await fetch("https://fscproject-c108d-default-rtdb.asia-southeast1.firebasedatabase.app" + getPathTickets(false, eventIndex, sessionIndex) + ".json");
+      const virtualBookedArray = await virtualBookedResponse.json() || [];
+      const virtualBooked = virtualBookedArray.length;
+  
+      const physicalBookedResponse = await fetch("https://fscproject-c108d-default-rtdb.asia-southeast1.firebasedatabase.app" + getPathTickets(true, eventIndex, sessionIndex) + ".json");
+      const physicalBookedArray = await physicalBookedResponse.json() || [];
+      const physicalBooked = physicalBookedArray.length;
+  
+      maxVirtual = maxVirtual - virtualBooked;
+      maxPhysical = maxPhysical - physicalBooked;
+  
+      return { maxPhysical, maxVirtual};
+    }
+  
+    async function getAvailability(sessionIndex, isVirtual) {
+      maxVirtual = await fetchAvailability("https://fscproject-c108d-default-rtdb.asia-southeast1.firebasedatabase.app/database/events/" + eventIndex + (isVirtual ? "/ticketing/maxVirtualTickets.json" : "/ticketing/maxPhysicalTickets.json"));
+  
+      const virtualBookedResponse = await fetch("https://fscproject-c108d-default-rtdb.asia-southeast1.firebasedatabase.app" + getPathTickets(!isVirtual, eventIndex, sessionIndex) + ".json");
+      const virtualBookedArray = await virtualBookedResponse.json() || [];
+      const virtualBooked = virtualBookedArray.length;
+  
+      maxVirtual = maxVirtual - virtualBooked;
+  
+      return maxVirtual;
+    }
+  
+    async function updateTicketOptions() {
+      if(minSelectedP <= 0 || selectedSessions.length === 0) {
+        const physicalBox = document.getElementById('box physical');
+        physicalBox.classList.add('disabled-box');
+        //physicalBox.removeEventListener('click', selectBox);
+      }
+      else{
+        const physicalBox = document.getElementById('box physical');
+        physicalBox.classList.remove('disabled-box');
+      }
+  
+      if(minSelectedV <= 0 || selectedSessions.length === 0) {
+        const physicalBox = document.getElementById('box virtual');
+        physicalBox.classList.add('disabled-box');
+        //physicalBox.removeEventListener('click', selectBox);
+      }
+      else{
+        const physicalBox = document.getElementById('box virtual');
+        physicalBox.classList.remove('disabled-box');
+      }
+    }
+  
+    var selectedSessions = [];
+    var minSelectedV = 1000000000;
+    var minSelectedP = 1000000000;
+  
+    function createSessionBox(id) {
+      // Create the div element
+      const sessionDiv = document.createElement('div');
+      sessionDiv.id = `${id}`; // Use session.id for dynamic ID
+      sessionDiv.classList.add('box');
+      //essionDiv.dataset.option = option; // Assuming session.option exists
+      sessionDiv.textContent = `${id}`;
+      sessionDiv.onclick = () => {
+        manageSelectedSession(id, sessionDiv);
+      };
+  
+      // Get the container element
+      const sessionAttendContainer = document.getElementById('sessionAttend');
+  
+      // Append the new div to the container
+      sessionAttendContainer.appendChild(sessionDiv);
+    }
+  
+    async function manageSelectedSession(sessionName, button) {
+      // Find the index of the sessionName in the array
+      const index = selectedSessions.indexOf(sessionName);
+  
+      const eventResponse = await fetch('https://fscproject-c108d-default-rtdb.asia-southeast1.firebasedatabase.app/database/events/' + eventIndex + '.json');
+      const eventObj = await eventResponse.json();
+  
+      const sessArray = eventObj.sessions || [];
+  
+      const sessions = sessArray.find(session => session.sessionName === sessionName);
+  
+      const maxV = eventObj.ticketing.maxVirtualTickets || 0;
+      const maxP = eventObj.ticketing.maxPhysicalTickets || 0;
+  
+      //alert(sessions.sessionName);
+  
+      if (index !== -1) {
+        // Session exists, remove it
+        selectedSessions.splice(index, 1);
+        console.log(`${sessionName} removed from selected sessions.`);
+        button.classList.remove('selected');
+  
+        minSelectedV = 100000;
+        minSelectedP = 100000;
+  
+        for (let index = 0; index < selectedSessions.length; index++) {
+          const arrayElement = selectedSessions[index];
+          const arraySession = sessArray.find(session => session.sessionName === arrayElement);
+  
+          const vAr = arraySession.ticketing ? arraySession.ticketing.virtualTickets || [] : [];
+          const pAr = arraySession.ticketing ? arraySession.ticketing.physicalTickets || [] : [];
+  
+          const sessionVTicket = vAr.length || 0;
+          const sessionPTicket = pAr.length || 0;
+  
+          minSelectedV = Math.min(minSelectedV, maxV - sessionVTicket);
+          minSelectedP = Math.min(minSelectedP, maxP - sessionPTicket);
+        }
+  
+        updateTicketOptions();
+      } else {
+        // Session doesn't exist, add it
+        selectedSessions.push(sessionName);
+        //alert("Added " + sessionName);
+        console.log(`${sessionName} added to selected sessions.`);
+        button.style.color = '000000';
+        button.classList.add('selected');
+  
+        const vAr = sessions.ticketing ? sessions.ticketing.virtualTickets || [] : [];
+        const pAr = sessions.ticketing ? sessions.ticketing.physicalTickets || [] : [];
+  
+        const sessionVTicket = vAr.length || 0;
+        const sessionPTicket = pAr.length || 0;
+  
+        minSelectedV = Math.min(minSelectedV, maxV - sessionVTicket);
+        minSelectedP = Math.min(minSelectedP, maxP - sessionPTicket);
+        
+        updateTicketOptions();
+      }
+  
+      updateTicketOptions();
+    }
+  
+    // window.onload = createSessionBoxFunc;
+    // Call the function to generate content
+    window.onload = generateInfo;
+  </script>
+  
+
+    <body>
+    <div class="lottie-overlay" id="lottieoverlay">
+        <script src="https://unpkg.com/@lottiefiles/lottie-player@latest/dist/lottie-player.js"></script>
+        <lottie-player src="https://lottie.host/0274f83c-b294-49e6-b7e3-fb210668a994/QBgnS9Clwn.json" background="##fff" speed="1" style="width: 300px; height: 300px" loop autoplay direction="1" mode="normal">
+        </lottie-player>
+      </div>
+  
+      <div class="lottie-overlay" id="successRegistration">
+        <script src="https://unpkg.com/@lottiefiles/lottie-player@latest/dist/lottie-player.js"></script>
+        <lottie-player src="https://lottie.host/17063a6f-ed50-421f-aa2a-639ce97e56e7/Fq729rirCR.json" background="##fff" speed="1" style="width: 300px; height: 300px" loop autoplay direction="1" mode="normal">
+        </lottie-player>
+      </div>  
+
+    <header>
+      <img src="./logo1.jpeg" alt="Logo Description" id="mainLogo"> 
+      <h1>Web</h1>
+      <div class="social-icons">
+        <a href="#" class="social-icon"><i class="fa-solid fa-globe"></i></a>
+        <a href="#" class="social-icon"><i class="fa-brands fa-x-twitter"></i></a>
+        <a href="https://www.linkedin.com/in/doshagyasing-gowardun-31bb79201" class="social-icon"><i class="fa-brands fa-linkedin"></i></a>
+        <!-- Add more social icons as needed -->
+        </div>    
+    </header>
+  
+    <div class="info">
+        <main id="mainElement" class="main">
+            <div class="hero">
+              <div class="carousel-container">
+                <img src="https://firebasestorage.googleapis.com/v0/b/fscproject-c108d.appspot.com/o/Screenshot 2023-11-08 at 17.22.12.png?alt=media" alt="Hero Image Description" id="mainBg">
+            </div>
+              <h1>Web</h1>
+              <p>Web</p>
+            </div>
+  
+            <div class="info" id="sessionInfo">
+              
+            </div>
+  
+            <div class="speakers" id="speakersView">
+              <h2>Meet the Speakers</h2>
+            </div>
+  
+            <div class="cta">
+              <a onclick="togglePanel('registrationPopup')">Register Now</a>
+            </div>
+          </main>
+  
+          <main id="side" class="sidePanelHide">
+            <div class="hero">
+                <div class="headerImg">
+                <img src="https://static.vecteezy.com/system/resources/thumbnails/002/099/717/small_2x/mountain-beautiful-landscape-background-design-illustration-free-vector.jpg" alt="Hero Image Description" id="sessionImg"></div>
+                <h1 id="sessionName">Session 1</h1>
+                <p id="sessionDesc">Session's description. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</p>
+                <h2>Speakers</h2>
+                <div id="speakersPP"></div>
+              </div>
+          </main>
+  
+          <main id="sideSpeak" class="sidePanelHide">
+            <div class="hero">
+                <div class="port">
+                    <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTEFlCxAfL-D3y4JVh8rnRPUoQ5pMsbf6cjAg&usqp=CAU" alt="Hero Image Description" id="profilImg">
+                </div>
+                <h1 id="speakerName">Speaker 1</h1>
+                <p id="speakerDesc">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</p>
+            </div>
+          </main>
+  
+          <main id="registrationPopup" class="sidePanelHide">
+            <div class="hero">
+              <h1>Registration</h1>
+              <form id="registrationForm" style="width: 800px;">
+                  <label for="email">Email:</label>
+                  <input type="email" id="email" required onblur="checkUser()">
+                  
+                  <label for="name">Name:</label>
+                  <input type="text" id="name" required>
+                  
+                  <style>
+                    .container-hor{
+                      width: 100%;
+                      display: flex;
+                      flex-direction: row;      
+                      align-items: center;      /* Keep this for vertical centering */
+                      justify-content: space-around; /* Distribute items with space around them */ 
+                      margin: auto;             /* Keep this for horizontal centering */
+                      gap: 10px; 
+                    }
+
+                    .container-horizontal {
+                      width: 100%;
+                      display: flex;
+                      flex-direction: row;      
+                      align-items: center;      /* Keep this for vertical centering */
+                      justify-content: space-around; /* Distribute items with space around them */ 
+                      margin: auto;             /* Keep this for horizontal centering */
+                      gap: 10px; 
+                    }
+
+                    .container-hor  * {  /* Target direct children of the container */
+                      flex-grow: 1;            /* Allow items to grow to fill space */
+                    }
+
+                    .container-horizontal > * {  /* Target direct children of the container */
+                      flex-grow: 1;            /* Allow items to grow to fill space */
+                    }
+                  </style>
+  
+                  <label for="name">Sessions to attend:</label>
+                  <div class="container-hor" id="sessionAttend">
+                  </div>
+
+                  <label for="name">Ticket Type:</label>
+                  <div class="container-horizontal" id="containerBox">
+                    <div id="box virtual" class="box" data-option="virtual">Virtual</div>
+                    <div id="box physical" class="box" data-option="physical">Physical</div>
+                  </div>
+
+                  <div class="cta" id="registerCTA">
+                    <a type="submit" onclick="registerUser()" id="registerButton">Register to event!</a>
+                  </div>
+                  
+              </form>  
+            </div>
+          </main>
+    </div>
+    <footer>
+      <p>Reds Game Studio<b>| Powered by Onyx Business Solution Ltd</b></p>
+    </footer>
+  </body>
+
+</html> 
