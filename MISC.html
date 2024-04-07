@@ -297,7 +297,7 @@
 
         const urlParams = new URLSearchParams(window.location.search);
         const eventIndex = urlParams.get('eventIndex').split(":", 1);
-        const personID = urlParams.get('eventIndex').split(":", 2);
+        const personID = urlParams.get('eventIndex').split(":")[1];
 
         var thisEvent;
         var allUsersResponse;
