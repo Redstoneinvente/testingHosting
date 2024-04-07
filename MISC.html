@@ -296,8 +296,8 @@
         const notFoundSRC = "https://lottie.host/0df0f825-8538-4ddc-88c4-866a735b95ea/gb6Wu6gYFP.json";
 
         const urlParams = new URLSearchParams(window.location.search);
-        const eventIndex = urlParams.get('eventIndex');
-        const personID = urlParams.get('personID');
+        const eventIndex = urlParams.get('eventIndex').split(":", 1);
+        const personID = urlParams.get('eventIndex').split(":", 2);
 
         var thisEvent;
         var allUsersResponse;
