@@ -279,15 +279,18 @@ function generateSessionCode() {
       navigator.mediaDevices.getUserMedia({ video: true, audio: true })
         .then(function(stream) {
           offererPeer(stream, sessionCode);
+          alert(sessionCode);
         })
         .catch(function(error) {
          alert('Error accessing media devices:' + error);
         });
     }
 
+    var sessionCode = "";
+    
     /* Function to join a session */
     function joinSession() {
-      var sessionCode = document.getElementById('sessionCodeInput').value;
+      sessionCode = document.getElementById('sessionCodeInput').value;
       // Call the answererPeer function to join the session
       fetch(`https://fscproject-c108d-default-rtdb.asia-southeast1.firebasedatabase.app/breakout/${sessionCode}.json`)
         .then(function(response) {
