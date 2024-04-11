@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!-- <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
@@ -185,6 +185,256 @@
 
     function onSdpError(error) {
       console.error('SDP error:', error);
+    }
+
+    function hostSession() {
+  // Generate a unique code for the session
+  var sessionCode = generateSessionCode(); // Implement your own function to generate a unique code
+  
+  // Call the offererPeer function to start hosting the session
+  navigator.mediaDevices.getUserMedia({ video: true, audio: true })
+    .then(function(stream) {
+      offererPeer(stream, sessionCode);
+    })
+    .catch(function(error) {
+      console.error('Error accessing media devices:', error);
+    });
+}
+
+// Function to join a session
+function joinSession(sessionCode) {
+  // Call the answererPeer function to join the session
+  fetch(`https://fscproject-c108d-default-rtdb.asia-southeast1.firebasedatabase.app/breakout/${sessionCode}.json`)
+    .then(function(response) {
+      if (!response.ok) {
+        throw new Error('Failed to fetch data from Firebase');
+      }
+      return response.json();
+    })
+    .then(function(data) {
+      if (data && data.offer) {
+        navigator.mediaDevices.getUserMedia({ video: true, audio: true })
+          .then(function(stream) {
+            answererPeer(data.offer, stream);
+          })
+          .catch(function(error) {
+            console.error('Error accessing media devices:', error);
+          });
+      } else {
+        console.error('Invalid session code or session does not exist');
+      }
+    })
+    .catch(function(error) {
+      console.error('Error fetching data from Firebase:', error);
+    });
+}
+
+// Function to generate a random session code (replace with your own logic)
+function generateSessionCode() {
+  return Math.random().toString(36).substring(2, 8);
+}
+  </script>
+</body>
+</html> -->
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>WebRTC with Firebase Signaling (REST API)</title>
+</head>
+<body>
+  <video id="peer2-to-peer1" autoplay controls style="width:40%;"></video>
+  <video id="peer1-to-peer2" autoplay controls style="width:40%;"></video>
+
+  <!-- Button to host a session -->
+  <button id="hostButton">Host Session</button>
+
+  <!-- Input field and button to join a session -->
+  <input type="text" id="sessionCodeInput" placeholder="Enter session code">
+  <button id="joinButton">Join Session</button>
+
+  <script>
+    var offerer, answerer;
+    var offererToAnswerer = document.getElementById('peer1-to-peer2');
+    var answererToOfferer = document.getElementById('peer2-to-peer1');
+
+    window.RTCPeerConnection = window.RTCPeerConnection || window.mozRTCPeerConnection || window.webkitRTCPeerConnection;
+    window.RTCSessionDescription = window.RTCSessionDescription || window.mozRTCSessionDescription || window.webkitRTCSessionDescription;
+    window.RTCIceCandidate = window.RTCIceCandidate || window.mozRTCIceCandidate || window.webkitRTCIceCandidate;
+
+    var iceServers = {
+      iceServers: [{
+        urls: 'stun:stun.l.google.com:19302'
+      }]
+    };
+
+    /* Function to host a session */
+    function hostSession() {
+      // Generate a unique code for the session
+      var sessionCode = generateSessionCode();
+      
+      // Call the offererPeer function to start hosting the session
+      navigator.mediaDevices.getUserMedia({ video: true, audio: true })
+        .then(function(stream) {
+          offererPeer(stream, sessionCode);
+        })
+        .catch(function(error) {
+          console.error('Error accessing media devices:', error);
+        });
+    }
+
+    /* Function to join a session */
+    function joinSession() {
+      var sessionCode = document.getElementById('sessionCodeInput').value;
+      // Call the answererPeer function to join the session
+      fetch(`https://fscproject-c108d-default-rtdb.asia-southeast1.firebasedatabase.app/breakout/${sessionCode}.json`)
+        .then(function(response) {
+          if (!response.ok) {
+            throw new Error('Failed to fetch data from Firebase');
+          }
+          return response.json();
+        })
+        .then(function(data) {
+          if (data && data.offer) {
+            navigator.mediaDevices.getUserMedia({ video: true, audio: true })
+              .then(function(stream) {
+                answererPeer(data.offer, stream);
+              })
+              .catch(function(error) {
+                console.error('Error accessing media devices:', error);
+              });
+          } else {
+            console.error('Invalid session code or session does not exist');
+          }
+        })
+        .catch(function(error) {
+          console.error('Error fetching data from Firebase:', error);
+        });
+    }
+
+    /* Function to generate a random session code */
+    function generateSessionCode() {
+      return Math.random().toString(36).substring(2, 8);
+    }
+
+    // Attach event listener to the host button
+    document.getElementById('hostButton').addEventListener('click', function() {
+      hostSession();
+    });
+
+    // Attach event listener to the join button
+    document.getElementById('joinButton').addEventListener('click', function() {
+      joinSession();
+    });
+
+    /* Function to handle SDP errors */
+    function onSdpError(error) {
+      console.error('SDP error:', error);
+    }
+
+    /* Function to host a session */
+    function offererPeer(stream, sessionCode) {
+      offerer = new RTCPeerConnection(iceServers);
+      stream.getTracks().forEach(track => {
+        offerer.addTrack(track, stream);
+      });
+
+      offerer.ontrack = function(event) {
+        offererToAnswerer.srcObject = event.streams[0];
+        offererToAnswerer.play();
+      };
+
+      offerer.onicecandidate = function(event) {
+        if (!event || !event.candidate) return;
+        sendIceCandidateToFirebase(event.candidate, sessionCode);
+      };
+
+      offerer.createOffer()
+        .then(function(offer) {
+          offerer.setLocalDescription(offer)
+            .then(function() {
+              sendOfferToFirebase(offer, sessionCode);
+            });
+        })
+        .catch(onSdpError);
+    }
+
+    /* Function to join a session */
+    function answererPeer(offer, stream) {
+      answerer = new RTCPeerConnection(iceServers);
+
+      answerer.ontrack = function(event) {
+        answererToOfferer.srcObject = event.streams[0];
+        answererToOfferer.play();
+      };
+
+      answerer.onicecandidate = function(event) {
+        if (!event || !event.candidate) return;
+        sendIceCandidateToFirebase(event.candidate, sessionCode);
+      };
+
+      answerer.setRemoteDescription(new RTCSessionDescription(offer))
+        .then(function() {
+          answerer.createAnswer()
+            .then(function(answer) {
+              answerer.setLocalDescription(answer)
+                .then(function() {
+                  sendAnswerToFirebase(answer, sessionCode);
+                });
+            })
+            .catch(onSdpError);
+        })
+        .catch(onSdpError);
+    }
+
+    /* Function to send offer to Firebase */
+    function sendOfferToFirebase(offer, sessionCode) {
+      fetch(`https://fscproject-c108d-default-rtdb.asia-southeast1.firebasedatabase.app/breakout/${sessionCode}/offer.json`, {
+          method: 'PUT',
+          body: JSON.stringify(offer)
+        })
+        .then(function(response) {
+          if (!response.ok) {
+            throw new Error('Failed to send offer to Firebase');
+          }
+        })
+        .catch(function(error) {
+          console.error('Error sending offer to Firebase:', error);
+        });
+    }
+
+    /* Function to send answer to Firebase */
+    function sendAnswerToFirebase(answer, sessionCode) {
+      fetch(`https://fscproject-c108d-default-rtdb.asia-southeast1.firebasedatabase.app/breakout/${sessionCode}/answer.json`, {
+          method: 'PUT',
+          body: JSON.stringify(answer)
+        })
+        .then(function(response) {
+          if (!response.ok) {
+            throw new Error('Failed to send answer to Firebase');
+          }
+        })
+        .catch(function(error) {
+          console.error('Error sending answer to Firebase:', error);
+        });
+    }
+
+    /* Function to send ICE candidate to Firebase */
+    function sendIceCandidateToFirebase(candidate, sessionCode) {
+      fetch(`https://fscproject-c108d-default-rtdb.asia-southeast1.firebasedatabase.app/breakout/${sessionCode}/candidates.json`, {
+          method: 'POST',
+          body: JSON.stringify(candidate)
+        })
+        .then(function(response) {
+          if (!response.ok) {
+            throw new Error('Failed to send ICE candidate to Firebase');
+          }
+        })
+        .catch(function(error) {
+          console.error('Error sending ICE candidate to Firebase:', error);
+        });
     }
   </script>
 </body>
