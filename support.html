@@ -245,7 +245,7 @@ function generateSessionCode() {
   <title>WebRTC with Firebase Signaling (REST API)</title>
 </head>
 <body>
-  <h1>Vide</h1>
+  <h1>Video Chat</h1>
   <video id="peer2-to-peer1" controls style="width:40%;"></video>
   <video id="peer1-to-peer2" controls style="width:40%;"></video>
 
@@ -275,7 +275,7 @@ function generateSessionCode() {
     function hostSession() {
       // Generate a unique code for the session
       var sessionCode = generateSessionCode();
-      
+      alert(sessionCode);
       // Call the offererPeer function to start hosting the session
       navigator.mediaDevices.getUserMedia({ video: true, audio: true })
         .then(function(stream) {
@@ -340,12 +340,15 @@ function generateSessionCode() {
     /* Function to host a session */
     function offererPeer(stream, sessionCode) {
       offerer = new RTCPeerConnection(iceServers);
+      
       stream.getTracks().forEach(track => {
         offerer.addTrack(track, stream);
       });
 
+      console.log(stream);
+
       offerer.ontrack = function(event) {
-        offererToAnswerer.srcObject = event.streams[0];
+        offererToAnswerer.srcObject = stream;
         // Auto-play the video when the stream is available
         var playPromise = offererToAnswerer.play();
 
@@ -381,7 +384,7 @@ function generateSessionCode() {
       answerer = new RTCPeerConnection(iceServers);
 
       answerer.ontrack = function(event) {
-        answererToOfferer.srcObject = event.streams[0];
+        answererToOfferer.srcObject =stream;
         // Auto-play the video when the stream is available
         var playPromise = answererToOfferer.play();
 
