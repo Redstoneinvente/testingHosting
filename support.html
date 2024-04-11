@@ -245,8 +245,9 @@ function generateSessionCode() {
   <title>WebRTC with Firebase Signaling (REST API)</title>
 </head>
 <body>
-  <video id="peer2-to-peer1" autoplay controls style="width:40%;"></video>
-  <video id="peer1-to-peer2" autoplay controls style="width:40%;"></video>
+  <h1>Vide</h1>
+  <video id="peer2-to-peer1" controls style="width:40%;"></video>
+  <video id="peer1-to-peer2" controls style="width:40%;"></video>
 
   <!-- Button to host a session -->
   <button id="hostButton">Host Session</button>
@@ -279,10 +280,9 @@ function generateSessionCode() {
       navigator.mediaDevices.getUserMedia({ video: true, audio: true })
         .then(function(stream) {
           offererPeer(stream, sessionCode);
-          alert(sessionCode);
         })
         .catch(function(error) {
-         alert('Error accessing media devices:' + error);
+          console.error('Error accessing media devices:', error);
         });
     }
 
@@ -306,14 +306,14 @@ function generateSessionCode() {
                 answererPeer(data.offer, stream);
               })
               .catch(function(error) {
-                alert('Error accessing media devices:' + error);
+                console.error('Error accessing media devices:', error);
               });
           } else {
-            alert('Invalid session code or session does not exist');
+            console.error('Invalid session code or session does not exist');
           }
         })
         .catch(function(error) {
-          alert('Error fetching data from Firebase:' + error);
+          console.error('Error fetching data from Firebase:', error);
         });
     }
 
@@ -346,18 +346,19 @@ function generateSessionCode() {
 
       offerer.ontrack = function(event) {
         offererToAnswerer.srcObject = event.streams[0];
+        // Auto-play the video when the stream is available
         var playPromise = offererToAnswerer.play();
 
         if (playPromise !== undefined) {
-    playPromise.then(_ => {
-      // Automatic playback started!
-      // Show playing UI.
-    })
-    .catch(error => {
-      // Auto-play was prevented
-      // Show paused UI.
-    });
-  }
+          playPromise.then(_ => {
+            // Automatic playback started!
+            // Show playing UI.
+          })
+          .catch(error => {
+            // Auto-play was prevented
+            // Show paused UI.
+          });
+        }
       };
 
       offerer.onicecandidate = function(event) {
@@ -381,20 +382,19 @@ function generateSessionCode() {
 
       answerer.ontrack = function(event) {
         answererToOfferer.srcObject = event.streams[0];
+        // Auto-play the video when the stream is available
         var playPromise = answererToOfferer.play();
 
-        //var playPromise = video.play();
-
-  if (playPromise !== undefined) {
-    playPromise.then(_ => {
-      // Automatic playback started!
-      // Show playing UI.
-    })
-    .catch(error => {
-      // Auto-play was prevented
-      // Show paused UI.
-    });
-  }
+        if (playPromise !== undefined) {
+          playPromise.then(_ => {
+            // Automatic playback started!
+            // Show playing UI.
+          })
+          .catch(error => {
+            // Auto-play was prevented
+            // Show paused UI.
+          });
+        }
       };
 
       answerer.onicecandidate = function(event) {
@@ -428,7 +428,7 @@ function generateSessionCode() {
           }
         })
         .catch(function(error) {
-          alert('Error sending offer to Firebase:' + error);
+          console.error('Error sending offer to Firebase:', error);
         });
     }
 
@@ -444,7 +444,7 @@ function generateSessionCode() {
           }
         })
         .catch(function(error) {
-          alert('Error sending answer to Firebase:' + error);
+          console.error('Error sending answer to Firebase:', error);
         });
     }
 
@@ -460,7 +460,7 @@ function generateSessionCode() {
           }
         })
         .catch(function(error) {
-          alert('Error sending ICE candidate to Firebase:' + error);
+          console.error('Error sending ICE candidate to Firebase:', error);
         });
     }
   </script>
