@@ -1,104 +1,191 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>WebRTC with Firebase Signaling (REST API)</title>
+</head>
 <body>
   <video id="peer2-to-peer1" autoplay controls style="width:40%;"></video>
   <video id="peer1-to-peer2" autoplay controls style="width:40%;"></video>
-</body>
 
-<script>
- var mediaConstraints = {
-     optional: [],
-     mandatory: {
-         OfferToReceiveAudio: true,
-         OfferToReceiveVideo: true
-     }
- };
+  <script>
+    var offerer, answerer;
+    var offererToAnswerer = document.getElementById('peer1-to-peer2');
+    var answererToOfferer = document.getElementById('peer2-to-peer1');
 
- var offerer, answerer;
- var offererToAnswerer = document.getElementById('peer1-to-peer2');
- var answererToOfferer = document.getElementById('peer2-to-peer1');
+    window.RTCPeerConnection = window.RTCPeerConnection || window.mozRTCPeerConnection || window.webkitRTCPeerConnection;
+    window.RTCSessionDescription = window.RTCSessionDescription || window.mozRTCSessionDescription || window.webkitRTCSessionDescription;
+    window.RTCIceCandidate = window.RTCIceCandidate || window.mozRTCIceCandidate || window.webkitRTCIceCandidate;
 
- window.RTCPeerConnection = window.RTCPeerConnection || window.mozRTCPeerConnection || window.webkitRTCPeerConnection;
- window.RTCSessionDescription = window.RTCSessionDescription || window.mozRTCSessionDescription || window.webkitRTCSessionDescription;
- window.RTCIceCandidate = window.RTCIceCandidate || window.mozRTCIceCandidate || window.webkitRTCIceCandidate;
+    var iceServers = {
+      iceServers: [{
+        urls: 'stun:stun.l.google.com:19302'
+      }]
+    };
 
- navigator.mediaDevices.getUserMedia({ video: true, audio: true })
-  .then(stream => {
-    // Success: You have the media stream 
-    offererPeer(stream);
-  })
-  .catch(error => {
-    // Error handling
-    console.error('Error accessing media devices:', error);
-  });
+    // Check if getUserMedia is supported by the browser
+    if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
+      navigator.mediaDevices.getUserMedia({ video: true, audio: true })
+        .then(function(stream) {
+          // Success: You have the media stream 
+          offererPeer(stream);
+        })
+        .catch(function(error) {
+          // Error handling
+          console.error('Error accessing media devices:', error);
+        });
+    } else {
+      console.error('getUserMedia is not supported in this browser.');
+    }
 
- var iceServers = {
-     iceServers: [{
-         urls: 'stun:stun.l.google.com:19302'
-     }]
- };
+    /* offerer */
+    function offererPeer(stream) {
+      offerer = new RTCPeerConnection(iceServers);
+      stream.getTracks().forEach(track => {
+        offerer.addTrack(track, stream);
+      });
 
- /* offerer */
+      offerer.ontrack = function(event) {
+        offererToAnswerer.srcObject = event.streams[0];
+        offererToAnswerer.play();
+      };
 
- function offererPeer(stream) {
-     offerer = new RTCPeerConnection(iceServers);
-     stream.getTracks().forEach(track => {
-         offerer.addTrack(track, stream);
-     });
+      offerer.onicecandidate = function(event) {
+        if (!event || !event.candidate) return;
+        sendIceCandidateToFirebase(event.candidate);
+      };
 
-     offerer.ontrack = function (event) {
-         offererToAnswerer.srcObject = event.streams[0];
-         offererToAnswerer.play();
-     };
-
-     offerer.onicecandidate = function (event) {
-         if (!event || !event.candidate) return;
-         answerer.addIceCandidate(event.candidate);
-     };
-
-     offerer.createOffer(function (offer) {
-         offerer.setLocalDescription(offer)
-            .then(() => {
-                answererPeer(offer, stream);
-            })
-            .catch(onSdpError);
-     }, onSdpError, mediaConstraints);
- }
-
-
- /* answerer */
-
- function answererPeer(offer, stream) {
-     answerer = new RTCPeerConnection(iceServers);
-     stream.getTracks().forEach(track => {
-         answerer.addTrack(track, stream);
-     });
-
-     answerer.ontrack = function (event) {
-         answererToOfferer.srcObject = event.streams[0];
-         answererToOfferer.play();
-     };
-
-     answerer.onicecandidate = function (event) {
-         if (!event || !event.candidate) return;
-         offerer.addIceCandidate(event.candidate);
-     };
-
-     answerer.setRemoteDescription(new RTCSessionDescription(offer))
-        .then(() => {
-            answerer.createAnswer()
-                .then(answer => {
-                    answerer.setLocalDescription(answer)
-                        .then(() => {
-                            offerer.setRemoteDescription(new RTCSessionDescription(answer))
-                                .catch(onSdpError);
-                        })
-                        .catch(onSdpError);
-                })
-                .catch(onSdpError);
+      offerer.createOffer()
+        .then(function(offer) {
+          offerer.setLocalDescription(offer)
+            .then(function() {
+              sendOfferToFirebase(offer);
+            });
         })
         .catch(onSdpError);
- }
+    }
 
- function onSdpError(error) {
-     console.error('SDP error:', error);
- }
-</script>
+    /* answerer */
+    function answererPeer(offer) {
+      answerer = new RTCPeerConnection(iceServers);
+
+      answerer.ontrack = function(event) {
+        answererToOfferer.srcObject = event.streams[0];
+        answererToOfferer.play();
+      };
+
+      answerer.onicecandidate = function(event) {
+        if (!event || !event.candidate) return;
+        sendIceCandidateToFirebase(event.candidate);
+      };
+
+      answerer.setRemoteDescription(new RTCSessionDescription(offer))
+        .then(function() {
+          answerer.createAnswer()
+            .then(function(answer) {
+              answerer.setLocalDescription(answer)
+                .then(function() {
+                  sendAnswerToFirebase(answer);
+                });
+            })
+            .catch(onSdpError);
+        })
+        .catch(onSdpError);
+    }
+
+    /* Firebase Signaling via REST API */
+    function sendOfferToFirebase(offer) {
+      // Use the Firebase Realtime Database REST API to send offer
+      fetch('https://fscproject-c108d-default-rtdb.asia-southeast1.firebasedatabase.app/breakout/code12345/offer.json', {
+          method: 'PUT',
+          body: JSON.stringify(offer)
+        })
+        .then(function(response) {
+          if (!response.ok) {
+            throw new Error('Failed to send offer to Firebase');
+          }
+        })
+        .catch(function(error) {
+          console.error('Error sending offer to Firebase:', error);
+        });
+    }
+
+    function sendAnswerToFirebase(answer) {
+      // Use the Firebase Realtime Database REST API to send answer
+      fetch('https://fscproject-c108d-default-rtdb.asia-southeast1.firebasedatabase.app/breakout/code12345/answer.json', {
+          method: 'PUT',
+          body: JSON.stringify(answer)
+        })
+        .then(function(response) {
+          if (!response.ok) {
+            throw new Error('Failed to send answer to Firebase');
+          }
+        })
+        .catch(function(error) {
+          console.error('Error sending answer to Firebase:', error);
+        });
+    }
+
+    function sendIceCandidateToFirebase(candidate) {
+      // Use the Firebase Realtime Database REST API to send ICE candidate
+      fetch('https://fscproject-c108d-default-rtdb.asia-southeast1.firebasedatabase.app/breakout/code12345/candidates.json', {
+          method: 'POST',
+          body: JSON.stringify(candidate)
+        })
+        .then(function(response) {
+          if (!response.ok) {
+            throw new Error('Failed to send ICE candidate to Firebase');
+          }
+        })
+        .catch(function(error) {
+          console.error('Error sending ICE candidate to Firebase:', error);
+        });
+    }
+
+    function listenForFirebaseMessages() {
+  // Replace 'code12345' with your desired code or room identifier
+  fetch('https://fscproject-c108d-default-rtdb.asia-southeast1.firebasedatabase.app/breakout/code12345.json')
+    .then(function(response) {
+      if (!response.ok) {
+        throw new Error('Failed to fetch data from Firebase');
+      }
+      return response.json();
+    })
+    .then(function(data) {
+      if (data) {
+        if (data.offer) {
+          answererPeer(data.offer);
+        }
+        if (data.answer) {
+          offerer.setRemoteDescription(new RTCSessionDescription(data.answer));
+        }
+        if (data.candidates) {
+          data.candidates.forEach(function(candidate) {
+            if (candidate) {
+              var iceCandidate = new RTCIceCandidate(candidate);
+              if (iceCandidate) {
+                if (offerer) {
+                  offerer.addIceCandidate(iceCandidate);
+                } else if (answerer) {
+                  answerer.addIceCandidate(iceCandidate);
+                }
+              }
+            }
+          });
+        }
+      }
+    })
+    .catch(function(error) {
+      console.error('Error fetching data from Firebase:', error);
+    });
+}
+
+    listenForFirebaseMessages();
+
+    function onSdpError(error) {
+      console.error('SDP error:', error);
+    }
+  </script>
+</body>
+</html>
