@@ -1,57 +1,104 @@
-<!DOCTYPE html>
-<html>
-  <script src="https://apis.google.com/js/api.js"></script>
-  <script>
-    // *********** WARNING: HIGHLY INSECURE ************* 
-    const CLIENT_ID = '396387591055-jv6tnqvutnqskpnbv6iqc7rsu81p0lqi.apps.googleusercontent.com';
-    const CLIENT_SECRET = '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';
-    const API_KEY = 'AIzaSyCaGwf9P4U0nsRLxjSusYJowblwHJExszc';
-    const SCOPES = 'https://www.googleapis.com/auth/calendar';
-    
-    function initClient() {
-      gapi.client.init({
-        apiKey: API_KEY,
-        clientId: CLIENT_ID,
-        clientSecret: CLIENT_SECRET,
-        discoveryDocs: ["https://www.googleapis.com/discovery/v1/apis/calendar/v3/rest"],
-        scope: SCOPES
-      }).then(() => {
-         // API is ready, you can make requests (e.g., createMeeting)
-      });
-    }
-    
-    function createMeeting() {
-      const event = {
-        summary: 'Test Meeting', // Title
-        start: { dateTime: '2023-12-20T10:00:00' }, // Adjust date and time
-        end: {  dateTime: '2023-12-20T10:30:00'  }
-      };
+<body>
+  <video id="peer2-to-peer1" autoplay controls style="width:40%;"></video>
+  <video id="peer1-to-peer2" autoplay controls style="width:40%;"></video>
+</body>
 
-      const request = gapi.client.calendar.events.insert({
-        'calendarId': 'primary', // Usually 'primary' for the main calendar
-        'resource': event 
-      });
+<script>
+ var mediaConstraints = {
+     optional: [],
+     mandatory: {
+         OfferToReceiveAudio: true,
+         OfferToReceiveVideo: true
+     }
+ };
 
-      request.execute(event => {
-        console.log('Meeting Created: ' + event.htmlLink); 
-        // Display event.htmlLink on your webpage 
-      });
-    }
+ var offerer, answerer;
+ var offererToAnswerer = document.getElementById('peer1-to-peer2');
+ var answererToOfferer = document.getElementById('peer2-to-peer1');
 
-    // Load the API 
-    gapi.load('client', initClient); 
-    </script>
-    
-    <body>
-      <h1>Create a Google Meet V2</h1>
+ window.RTCPeerConnection = window.RTCPeerConnection || window.mozRTCPeerConnection || window.webkitRTCPeerConnection;
+ window.RTCSessionDescription = window.RTCSessionDescription || window.mozRTCSessionDescription || window.webkitRTCSessionDescription;
+ window.RTCIceCandidate = window.RTCIceCandidate || window.mozRTCIceCandidate || window.webkitRTCIceCandidate;
 
-      <button onclick="createMeeting()">Create Meeting</button>
+ navigator.mediaDevices.getUserMedia({ video: true, audio: true })
+  .then(stream => {
+    // Success: You have the media stream 
+    offererPeer(stream);
+  })
+  .catch(error => {
+    // Error handling
+    console.error('Error accessing media devices:', error);
+  });
 
-      <div id="meetingLink"></div>
-    </body>
+ var iceServers = {
+     iceServers: [{
+         urls: 'stun:stun.l.google.com:19302'
+     }]
+ };
 
-    <style>
-      body { font-family: sans-serif; }
-      #meetingLink { margin-top: 10px; }
-    </style>    
-</html>
+ /* offerer */
+
+ function offererPeer(stream) {
+     offerer = new RTCPeerConnection(iceServers);
+     stream.getTracks().forEach(track => {
+         offerer.addTrack(track, stream);
+     });
+
+     offerer.ontrack = function (event) {
+         offererToAnswerer.srcObject = event.streams[0];
+         offererToAnswerer.play();
+     };
+
+     offerer.onicecandidate = function (event) {
+         if (!event || !event.candidate) return;
+         answerer.addIceCandidate(event.candidate);
+     };
+
+     offerer.createOffer(function (offer) {
+         offerer.setLocalDescription(offer)
+            .then(() => {
+                answererPeer(offer, stream);
+            })
+            .catch(onSdpError);
+     }, onSdpError, mediaConstraints);
+ }
+
+
+ /* answerer */
+
+ function answererPeer(offer, stream) {
+     answerer = new RTCPeerConnection(iceServers);
+     stream.getTracks().forEach(track => {
+         answerer.addTrack(track, stream);
+     });
+
+     answerer.ontrack = function (event) {
+         answererToOfferer.srcObject = event.streams[0];
+         answererToOfferer.play();
+     };
+
+     answerer.onicecandidate = function (event) {
+         if (!event || !event.candidate) return;
+         offerer.addIceCandidate(event.candidate);
+     };
+
+     answerer.setRemoteDescription(new RTCSessionDescription(offer))
+        .then(() => {
+            answerer.createAnswer()
+                .then(answer => {
+                    answerer.setLocalDescription(answer)
+                        .then(() => {
+                            offerer.setRemoteDescription(new RTCSessionDescription(answer))
+                                .catch(onSdpError);
+                        })
+                        .catch(onSdpError);
+                })
+                .catch(onSdpError);
+        })
+        .catch(onSdpError);
+ }
+
+ function onSdpError(error) {
+     console.error('SDP error:', error);
+ }
+</script>
