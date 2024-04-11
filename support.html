@@ -281,7 +281,7 @@ function generateSessionCode() {
           offererPeer(stream, sessionCode);
         })
         .catch(function(error) {
-          console.error('Error accessing media devices:', error);
+         alert('Error accessing media devices:' + error);
         });
     }
 
@@ -303,14 +303,14 @@ function generateSessionCode() {
                 answererPeer(data.offer, stream);
               })
               .catch(function(error) {
-                console.error('Error accessing media devices:', error);
+                alert('Error accessing media devices:' + error);
               });
           } else {
-            console.error('Invalid session code or session does not exist');
+            alert('Invalid session code or session does not exist');
           }
         })
         .catch(function(error) {
-          console.error('Error fetching data from Firebase:', error);
+          alert('Error fetching data from Firebase:' + error);
         });
     }
 
@@ -343,7 +343,18 @@ function generateSessionCode() {
 
       offerer.ontrack = function(event) {
         offererToAnswerer.srcObject = event.streams[0];
-        offererToAnswerer.play();
+        var playPromise = offererToAnswerer.play();
+
+        if (playPromise !== undefined) {
+    playPromise.then(_ => {
+      // Automatic playback started!
+      // Show playing UI.
+    })
+    .catch(error => {
+      // Auto-play was prevented
+      // Show paused UI.
+    });
+  }
       };
 
       offerer.onicecandidate = function(event) {
@@ -367,7 +378,20 @@ function generateSessionCode() {
 
       answerer.ontrack = function(event) {
         answererToOfferer.srcObject = event.streams[0];
-        answererToOfferer.play();
+        var playPromise = answererToOfferer.play();
+
+        //var playPromise = video.play();
+
+  if (playPromise !== undefined) {
+    playPromise.then(_ => {
+      // Automatic playback started!
+      // Show playing UI.
+    })
+    .catch(error => {
+      // Auto-play was prevented
+      // Show paused UI.
+    });
+  }
       };
 
       answerer.onicecandidate = function(event) {
@@ -401,7 +425,7 @@ function generateSessionCode() {
           }
         })
         .catch(function(error) {
-          console.error('Error sending offer to Firebase:', error);
+          alert('Error sending offer to Firebase:' + error);
         });
     }
 
@@ -417,7 +441,7 @@ function generateSessionCode() {
           }
         })
         .catch(function(error) {
-          console.error('Error sending answer to Firebase:', error);
+          alert('Error sending answer to Firebase:' + error);
         });
     }
 
@@ -433,7 +457,7 @@ function generateSessionCode() {
           }
         })
         .catch(function(error) {
-          console.error('Error sending ICE candidate to Firebase:', error);
+          alert('Error sending ICE candidate to Firebase:' + error);
         });
     }
   </script>
