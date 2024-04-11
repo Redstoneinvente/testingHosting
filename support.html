@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html>
+  <script src="https://apis.google.com/js/api.js"></script>
+  <script>
+    // *********** WARNING: HIGHLY INSECURE ************* 
+    const CLIENT_ID = '396387591055-jv6tngvutnqskpnbv6iqc7rsu81p0lqi.apps.googleusercontent.com';
+    const CLIENT_SECRET = 'GOCSPX-_L9VvXbcmZxe30BZtiLXcIP|JhA9';
+    const API_KEY = 'AIzaSyCaGwf9P4U0nsRLxjSusYJowblwHJExszc';
+    const SCOPES = 'https://www.googleapis.com/auth/calendar';
+    
+    function initClient() {
+      gapi.client.init({
+        apiKey: API_KEY,
+        clientId: CLIENT_ID,
+        clientSecret: CLIENT_SECRET,
+        discoveryDocs: ["https://www.googleapis.com/discovery/v1/apis/calendar/v3/rest"],
+        scope: SCOPES
+      }).then(() => {
+         // API is ready, you can make requests (e.g., createMeeting)
+      });
+    }
+    
+    function createMeeting() {
+      const event = {
+        summary: 'Test Meeting', // Title
+        start: { dateTime: '2023-12-20T10:00:00' }, // Adjust date and time
+        end: {  dateTime: '2023-12-20T10:30:00'  }
+      };
+
+      const request = gapi.client.calendar.events.insert({
+        'calendarId': 'primary', // Usually 'primary' for the main calendar
+        'resource': event 
+      });
+
+      request.execute(event => {
+        console.log('Meeting Created: ' + event.htmlLink); 
+        // Display event.htmlLink on your webpage 
+      });
+    }
+
+    // Load the API 
+    gapi.load('client', initClient); 
+    </script>
+    
+    <body>
+      <h1>Create a Google Meet</h1>
+
+      <button onclick="createMeeting()">Create Meeting</button>
+
+      <div id="meetingLink"></div>
+    </body>
+
+    <style>
+      body { font-family: sans-serif; }
+      #meetingLink { margin-top: 10px; }
+    </style>    
+</html>
