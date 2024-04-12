@@ -194,6 +194,15 @@ function handleReceivedStream(stream) {
     // remoteAudio.play(); // Start playback
   }
 
+  stream.onaddtrack = (event) => {
+    const videoTracks = stream.getVideoTracks();
+  if (videoTracks.length > 0) {
+    // Attach the video track to the <video> element
+    remoteVideo.srcObject = stream;
+    remoteVideo.play(); // Start playback
+  }
+  }
+
   // Check if the stream contains video tracks
   const videoTracks = stream.getVideoTracks();
   if (videoTracks.length > 0) {
