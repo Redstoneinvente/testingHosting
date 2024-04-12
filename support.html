@@ -70,7 +70,7 @@ webcamButton.onclick = async () => {
 
   pc.ontrack = (event) => {
     event.streams[0].getTracks().forEach((track) => {
-      remoteStream.addTrack(track);
+      remoteStream.addTrack(track, remoteStream);
     });
     remoteVideo.srcObject = remoteStream; // Assign remote stream to remote video element
   };
@@ -171,12 +171,12 @@ async function waitForAnswer() {
 
     pc.ontrack = (event) => {
     event.streams[0].getTracks().forEach((track) => {
-      remoteStream.addTrack(track);
+      remoteStream.addTrack(track, remoteStream);
     });
 
     alert("stream" + remoteStream);
     console.log(remoteStream);
-    remoteVideo.srcObject = remoteStream;
+    //remoteVideo.srcObject = remoteStream;
 
     handleReceivedStream(remoteStream);
   };
