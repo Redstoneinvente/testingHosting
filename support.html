@@ -17,8 +17,6 @@
         <h3>Remote Stream</h3>
         <video id="remoteVideo" autoplay playsinline></video>
       </span>
-
-
     </div>
 
     <button id="webcamButton">Start webcam</button>
@@ -34,8 +32,7 @@
     <h2>4. Hangup</h2>
 
     <button id="hangupButton" disabled>Hangup</button>
-    <button id="hangupButton" onclick="waitForAnswer()">Fetch</button>
-
+    <button id="fetchButton" onclick="waitForAnswer()">Fetch</button>
   </body>
 </html>
 
@@ -75,11 +72,10 @@ webcamButton.onclick = async () => {
     event.streams[0].getTracks().forEach((track) => {
       remoteStream.addTrack(track);
     });
+    remoteVideo.srcObject = remoteStream; // Assign remote stream to remote video element
   };
 
   webcamVideo.srcObject = localStream;
-  remoteVideo.srcObject = remoteStream;
-
   callButton.disabled = false;
   answerButton.disabled = false;
   webcamButton.disabled = true;
@@ -99,7 +95,6 @@ callButton.onclick = async () => {
   };
 
   sendOfferToFirebase(offer);
-  //waitForAnswer();
 };
 
 answerButton.onclick = async () => {
@@ -122,7 +117,7 @@ answerButton.onclick = async () => {
 };
 
 function sendIceCandidateToFirebase(candidate) {
-  fetch(`${apiUrl}/candidate`, {
+  fetch(`${apiUrl}/candidate.json`, {
     method: 'POST',
     body: JSON.stringify(candidate),
     headers: {
@@ -132,8 +127,8 @@ function sendIceCandidateToFirebase(candidate) {
 }
 
 function sendOfferToFirebase(offer) {
-  fetch(`${apiUrl}/offer`, {
-    method: 'POST',
+  fetch(`${apiUrl}/offer.json`, {
+    method: 'PUT',
     body: JSON.stringify(offer),
     headers: {
       'Content-Type': 'application/json',
@@ -142,14 +137,14 @@ function sendOfferToFirebase(offer) {
 }
 
 async function getOfferFromFirebase() {
-  const response = await fetch(`${apiUrl}/offer`);
+  const response = await fetch(`${apiUrl}/offer.json`);
   const offer = await response.json();
   return offer;
 }
 
 function sendAnswerToFirebase(answer) {
-  fetch(`${apiUrl}/answer`, {
-    method: 'POST',
+  fetch(`${apiUrl}/answer.json`, {
+    method: 'PUT',
     body: JSON.stringify(answer),
     headers: {
       'Content-Type': 'application/json',
@@ -158,9 +153,28 @@ function sendAnswerToFirebase(answer) {
 }
 
 async function waitForAnswer() {
-  const response = await fetch(`${apiUrl}/answer`);
-  const answer = await response.json();
-  await pc.setRemoteDescription(new RTCSessionDescription(answer));
-}
+  let answerDescription;
 
+    const response = await fetch(`${apiUrl}/answer.json`);
+    if (!response.ok) {
+      alert('Failed to fetch answer from REST API');
+    }
+
+    const answerData = await response.json();
+    if (answerData) {
+      answerDescription = new RTCSessionDescription(answerData);
+    } else {
+      answerDescription = new RTCSessionDescription({ type: 'answer', sdp: '' });
+    }
+
+    await pc.setRemoteDescription(answerDescription);
+
+    pc.ontrack = (event) => {
+    event.streams[0].getTracks().forEach((track) => {
+      remoteStream.addTrack(track);
+    });
+
+    remoteVideo.srcObject = remoteStream;
+  };
+}
 </script>
