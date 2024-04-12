@@ -177,6 +177,30 @@ async function waitForAnswer() {
     alert("stream" + remoteStream);
     console.log(remoteStream);
     remoteVideo.srcObject = remoteStream;
+
+    handleReceivedStream(remoteStream);
   };
 }
+
+function handleReceivedStream(stream) {
+  // Get the <audio> and <video> elements from the DOM
+  // const remoteAudio = document.getElementById('remoteAudio');
+
+  // Check if the stream contains audio tracks
+  const audioTracks = stream.getAudioTracks();
+  if (audioTracks.length > 0) {
+    // Attach the audio track to the <audio> element
+    // remoteAudio.srcObject = stream;
+    // remoteAudio.play(); // Start playback
+  }
+
+  // Check if the stream contains video tracks
+  const videoTracks = stream.getVideoTracks();
+  if (videoTracks.length > 0) {
+    // Attach the video track to the <video> element
+    remoteVideo.srcObject = stream;
+    remoteVideo.play(); // Start playback
+  }
+}
+
 </script>
