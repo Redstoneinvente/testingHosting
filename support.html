@@ -1,471 +1,166 @@
-<!-- <!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>WebRTC with Firebase Signaling (REST API)</title>
-</head>
-<body>
-  <video id="peer2-to-peer1" autoplay controls style="width:40%;"></video>
-  <video id="peer1-to-peer2" autoplay controls style="width:40%;"></video>
-
-  <script>
-    var offerer, answerer;
-    var offererToAnswerer = document.getElementById('peer1-to-peer2');
-    var answererToOfferer = document.getElementById('peer2-to-peer1');
-
-    window.RTCPeerConnection = window.RTCPeerConnection || window.mozRTCPeerConnection || window.webkitRTCPeerConnection;
-    window.RTCSessionDescription = window.RTCSessionDescription || window.mozRTCSessionDescription || window.webkitRTCSessionDescription;
-    window.RTCIceCandidate = window.RTCIceCandidate || window.mozRTCIceCandidate || window.webkitRTCIceCandidate;
-
-    var iceServers = {
-      iceServers: [{
-        urls: 'stun:stun.l.google.com:19302'
-      }]
-    };
-
-    // Check if getUserMedia is supported by the browser
-    if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
-      navigator.mediaDevices.getUserMedia({ video: true, audio: true })
-        .then(function(stream) {
-          // Success: You have the media stream 
-          offererPeer(stream);
-        })
-        .catch(function(error) {
-          // Error handling
-          console.error('Error accessing media devices:', error);
-        });
-    } else {
-      console.error('getUserMedia is not supported in this browser.');
-    }
-
-    /* offerer */
-    function offererPeer(stream) {
-      offerer = new RTCPeerConnection(iceServers);
-      stream.getTracks().forEach(track => {
-        offerer.addTrack(track, stream);
-      });
-
-      offerer.ontrack = function(event) {
-        offererToAnswerer.srcObject = event.streams[0];
-        offererToAnswerer.play();
-      };
-
-      offerer.onicecandidate = function(event) {
-        if (!event || !event.candidate) return;
-        sendIceCandidateToFirebase(event.candidate);
-      };
-
-      offerer.createOffer()
-        .then(function(offer) {
-          offerer.setLocalDescription(offer)
-            .then(function() {
-              sendOfferToFirebase(offer);
-            });
-        })
-        .catch(onSdpError);
-    }
-
-    /* answerer */
-    function answererPeer(offer) {
-      answerer = new RTCPeerConnection(iceServers);
-
-      answerer.ontrack = function(event) {
-        answererToOfferer.srcObject = event.streams[0];
-        answererToOfferer.play();
-      };
-
-      answerer.onicecandidate = function(event) {
-        if (!event || !event.candidate) return;
-        sendIceCandidateToFirebase(event.candidate);
-      };
-
-      answerer.setRemoteDescription(new RTCSessionDescription(offer))
-        .then(function() {
-          answerer.createAnswer()
-            .then(function(answer) {
-              answerer.setLocalDescription(answer)
-                .then(function() {
-                  sendAnswerToFirebase(answer);
-                });
-            })
-            .catch(onSdpError);
-        })
-        .catch(onSdpError);
-    }
-
-    /* Firebase Signaling via REST API */
-    function sendOfferToFirebase(offer) {
-      // Use the Firebase Realtime Database REST API to send offer
-      fetch('https://fscproject-c108d-default-rtdb.asia-southeast1.firebasedatabase.app/breakout/code12345/offer.json', {
-          method: 'PUT',
-          body: JSON.stringify(offer)
-        })
-        .then(function(response) {
-          if (!response.ok) {
-            throw new Error('Failed to send offer to Firebase');
-          }
-        })
-        .catch(function(error) {
-          console.error('Error sending offer to Firebase:', error);
-        });
-    }
-
-    function sendAnswerToFirebase(answer) {
-      // Use the Firebase Realtime Database REST API to send answer
-      fetch('https://fscproject-c108d-default-rtdb.asia-southeast1.firebasedatabase.app/breakout/code12345/answer.json', {
-          method: 'PUT',
-          body: JSON.stringify(answer)
-        })
-        .then(function(response) {
-          if (!response.ok) {
-            throw new Error('Failed to send answer to Firebase');
-          }
-        })
-        .catch(function(error) {
-          console.error('Error sending answer to Firebase:', error);
-        });
-    }
-
-    function sendIceCandidateToFirebase(candidate) {
-      // Use the Firebase Realtime Database REST API to send ICE candidate
-      fetch('https://fscproject-c108d-default-rtdb.asia-southeast1.firebasedatabase.app/breakout/code12345/candidates.json', {
-          method: 'POST',
-          body: JSON.stringify(candidate)
-        })
-        .then(function(response) {
-          if (!response.ok) {
-            throw new Error('Failed to send ICE candidate to Firebase');
-          }
-        })
-        .catch(function(error) {
-          console.error('Error sending ICE candidate to Firebase:', error);
-        });
-    }
-
-    function listenForFirebaseMessages() {
-  // Replace 'code12345' with your desired code or room identifier
-  fetch('https://fscproject-c108d-default-rtdb.asia-southeast1.firebasedatabase.app/breakout/code12345.json')
-    .then(function(response) {
-      if (!response.ok) {
-        throw new Error('Failed to fetch data from Firebase');
-      }
-      return response.json();
-    })
-    .then(function(data) {
-      if (data) {
-        if (data.offer) {
-          answererPeer(data.offer);
-        }
-        if (data.answer) {
-          offerer.setRemoteDescription(new RTCSessionDescription(data.answer));
-        }
-        if (data.candidates) {
-          data.candidates.forEach(function(candidate) {
-            if (candidate) {
-              var iceCandidate = new RTCIceCandidate(candidate);
-              if (iceCandidate) {
-                if (offerer) {
-                  offerer.addIceCandidate(iceCandidate);
-                } else if (answerer) {
-                  answerer.addIceCandidate(iceCandidate);
-                }
-              }
-            }
-          });
-        }
-      }
-    })
-    .catch(function(error) {
-      console.error('Error fetching data from Firebase:', error);
-    });
-}
-
-    listenForFirebaseMessages();
-
-    function onSdpError(error) {
-      console.error('SDP error:', error);
-    }
-
-    function hostSession() {
-  // Generate a unique code for the session
-  var sessionCode = generateSessionCode(); // Implement your own function to generate a unique code
-  
-  // Call the offererPeer function to start hosting the session
-  navigator.mediaDevices.getUserMedia({ video: true, audio: true })
-    .then(function(stream) {
-      offererPeer(stream, sessionCode);
-    })
-    .catch(function(error) {
-      console.error('Error accessing media devices:', error);
-    });
-}
-
-// Function to join a session
-function joinSession(sessionCode) {
-  // Call the answererPeer function to join the session
-  fetch(`https://fscproject-c108d-default-rtdb.asia-southeast1.firebasedatabase.app/breakout/${sessionCode}.json`)
-    .then(function(response) {
-      if (!response.ok) {
-        throw new Error('Failed to fetch data from Firebase');
-      }
-      return response.json();
-    })
-    .then(function(data) {
-      if (data && data.offer) {
-        navigator.mediaDevices.getUserMedia({ video: true, audio: true })
-          .then(function(stream) {
-            answererPeer(data.offer, stream);
-          })
-          .catch(function(error) {
-            console.error('Error accessing media devices:', error);
-          });
-      } else {
-        console.error('Invalid session code or session does not exist');
-      }
-    })
-    .catch(function(error) {
-      console.error('Error fetching data from Firebase:', error);
-    });
-}
-
-// Function to generate a random session code (replace with your own logic)
-function generateSessionCode() {
-  return Math.random().toString(36).substring(2, 8);
-}
-  </script>
-</body>
-</html> -->
-
 <!DOCTYPE html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>WebRTC with Firebase Signaling (REST API)</title>
-</head>
-<body>
-  <h1>Video Chat</h1>
-  <video id="peer2-to-peer1" controls style="width:40%;"></video>
-  <video id="peer1-to-peer2" controls style="width:40%;"></video>
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="favicon.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>WebRTC Demo</title>
+  </head>
+  <body>
+    <h2>1. Start your Webcam</h2>
+    <div class="videos">
+      <span>
+        <h3>Local Stream</h3>
+        <video id="webcamVideo" autoplay playsinline></video>
+      </span>
+      <span>
+        <h3>Remote Stream</h3>
+        <video id="remoteVideo" autoplay playsinline></video>
+      </span>
 
-  <!-- Button to host a session -->
-  <button id="hostButton">Host Session</button>
 
-  <!-- Input field and button to join a session -->
-  <input type="text" id="sessionCodeInput" placeholder="Enter session code">
-  <button id="joinButton">Join Session</button>
+    </div>
 
-  <script>
-    var offerer, answerer;
-    var offererToAnswerer = document.getElementById('peer1-to-peer2');
-    var answererToOfferer = document.getElementById('peer2-to-peer1');
+    <button id="webcamButton">Start webcam</button>
+    <h2>2. Create a new Call</h2>
+    <button id="callButton" disabled>Create Call (offer)</button>
 
-    window.RTCPeerConnection = window.RTCPeerConnection || window.mozRTCPeerConnection || window.webkitRTCPeerConnection;
-    window.RTCSessionDescription = window.RTCSessionDescription || window.mozRTCSessionDescription || window.webkitRTCSessionDescription;
-    window.RTCIceCandidate = window.RTCIceCandidate || window.mozRTCIceCandidate || window.webkitRTCIceCandidate;
-
-    var iceServers = {
-      iceServers: [{
-        urls: 'stun:stun.l.google.com:19302'
-      }]
-    };
-
-    /* Function to host a session */
-    function hostSession() {
-      // Generate a unique code for the session
-      var sessionCode = generateSessionCode();
-      alert(sessionCode);
-      // Call the offererPeer function to start hosting the session
-      navigator.mediaDevices.getUserMedia({ video: true, audio: true })
-        .then(function(stream) {
-          offererPeer(stream, sessionCode);
-        })
-        .catch(function(error) {
-          console.error('Error accessing media devices:', error);
-        });
-    }
-
-    var sessionCode = "";
+    <h2>3. Join a Call</h2>
+    <p>Answer the call from a different browser window or device</p>
     
-    /* Function to join a session */
-    function joinSession() {
-      sessionCode = document.getElementById('sessionCodeInput').value;
-      // Call the answererPeer function to join the session
-      fetch(`https://fscproject-c108d-default-rtdb.asia-southeast1.firebasedatabase.app/breakout/${sessionCode}.json`)
-        .then(function(response) {
-          if (!response.ok) {
-            throw new Error('Failed to fetch data from Firebase');
-          }
-          return response.json();
-        })
-        .then(function(data) {
-          if (data && data.offer) {
-            navigator.mediaDevices.getUserMedia({ video: true, audio: true })
-              .then(function(stream) {
-                answererPeer(data.offer, stream);
-              })
-              .catch(function(error) {
-                console.error('Error accessing media devices:', error);
-              });
-          } else {
-            console.error('Invalid session code or session does not exist');
-          }
-        })
-        .catch(function(error) {
-          console.error('Error fetching data from Firebase:', error);
-        });
-    }
+    <input id="callInput" />
+    <button id="answerButton" disabled>Answer</button>
 
-    /* Function to generate a random session code */
-    function generateSessionCode() {
-      return Math.random().toString(36).substring(2, 8);
-    }
+    <h2>4. Hangup</h2>
 
-    // Attach event listener to the host button
-    document.getElementById('hostButton').addEventListener('click', function() {
-      hostSession();
-    });
+    <button id="hangupButton" disabled>Hangup</button>
+    <button id="hangupButton" onclick="waitForAnswer()">Fetch</button>
 
-    // Attach event listener to the join button
-    document.getElementById('joinButton').addEventListener('click', function() {
-      joinSession();
-    });
-
-    /* Function to handle SDP errors */
-    function onSdpError(error) {
-      console.error('SDP error:', error);
-    }
-
-    /* Function to host a session */
-    function offererPeer(stream, sessionCode) {
-      offerer = new RTCPeerConnection(iceServers);
-      
-      stream.getTracks().forEach(track => {
-        offerer.addTrack(track, stream);
-      });
-
-      console.log(stream);
-
-      offerer.ontrack = function(event) {
-        offererToAnswerer.srcObject = stream;
-        // Auto-play the video when the stream is available
-        var playPromise = offererToAnswerer.play();
-
-        if (playPromise !== undefined) {
-          playPromise.then(_ => {
-            // Automatic playback started!
-            // Show playing UI.
-          })
-          .catch(error => {
-            // Auto-play was prevented
-            // Show paused UI.
-          });
-        }
-      };
-
-      offerer.onicecandidate = function(event) {
-        if (!event || !event.candidate) return;
-        sendIceCandidateToFirebase(event.candidate, sessionCode);
-      };
-
-      offerer.createOffer()
-        .then(function(offer) {
-          offerer.setLocalDescription(offer)
-            .then(function() {
-              sendOfferToFirebase(offer, sessionCode);
-            });
-        })
-        .catch(onSdpError);
-    }
-
-    /* Function to join a session */
-    function answererPeer(offer, stream) {
-      answerer = new RTCPeerConnection(iceServers);
-
-      answerer.ontrack = function(event) {
-        answererToOfferer.srcObject =stream;
-        // Auto-play the video when the stream is available
-        var playPromise = answererToOfferer.play();
-
-        if (playPromise !== undefined) {
-          playPromise.then(_ => {
-            // Automatic playback started!
-            // Show playing UI.
-          })
-          .catch(error => {
-            // Auto-play was prevented
-            // Show paused UI.
-          });
-        }
-      };
-
-      answerer.onicecandidate = function(event) {
-        if (!event || !event.candidate) return;
-        sendIceCandidateToFirebase(event.candidate, sessionCode);
-      };
-
-      answerer.setRemoteDescription(new RTCSessionDescription(offer))
-        .then(function() {
-          answerer.createAnswer()
-            .then(function(answer) {
-              answerer.setLocalDescription(answer)
-                .then(function() {
-                  sendAnswerToFirebase(answer, sessionCode);
-                });
-            })
-            .catch(onSdpError);
-        })
-        .catch(onSdpError);
-    }
-
-    /* Function to send offer to Firebase */
-    function sendOfferToFirebase(offer, sessionCode) {
-      fetch(`https://fscproject-c108d-default-rtdb.asia-southeast1.firebasedatabase.app/breakout/${sessionCode}/offer.json`, {
-          method: 'PUT',
-          body: JSON.stringify(offer)
-        })
-        .then(function(response) {
-          if (!response.ok) {
-            throw new Error('Failed to send offer to Firebase');
-          }
-        })
-        .catch(function(error) {
-          console.error('Error sending offer to Firebase:', error);
-        });
-    }
-
-    /* Function to send answer to Firebase */
-    function sendAnswerToFirebase(answer, sessionCode) {
-      fetch(`https://fscproject-c108d-default-rtdb.asia-southeast1.firebasedatabase.app/breakout/${sessionCode}/answer.json`, {
-          method: 'PUT',
-          body: JSON.stringify(answer)
-        })
-        .then(function(response) {
-          if (!response.ok) {
-            throw new Error('Failed to send answer to Firebase');
-          }
-        })
-        .catch(function(error) {
-          console.error('Error sending answer to Firebase:', error);
-        });
-    }
-
-    /* Function to send ICE candidate to Firebase */
-    function sendIceCandidateToFirebase(candidate, sessionCode) {
-      fetch(`https://fscproject-c108d-default-rtdb.asia-southeast1.firebasedatabase.app/breakout/${sessionCode}/candidates.json`, {
-          method: 'POST',
-          body: JSON.stringify(candidate)
-        })
-        .then(function(response) {
-          if (!response.ok) {
-            throw new Error('Failed to send ICE candidate to Firebase');
-          }
-        })
-        .catch(function(error) {
-          console.error('Error sending ICE candidate to Firebase:', error);
-        });
-    }
-  </script>
-</body>
+  </body>
 </html>
+
+<script>
+const apiUrl = 'https://fscproject-c108d-default-rtdb.asia-southeast1.firebasedatabase.app/breakout';
+
+const servers = {
+  iceServers: [
+    {
+      urls: ['stun:stun1.l.google.com:19302', 'stun:stun2.l.google.com:19302'],
+    },
+  ],
+  iceCandidatePoolSize: 10,
+};
+
+const pc = new RTCPeerConnection(servers);
+let localStream = null;
+let remoteStream = null;
+
+const webcamButton = document.getElementById('webcamButton');
+const webcamVideo = document.getElementById('webcamVideo');
+const callButton = document.getElementById('callButton');
+const callInput = document.getElementById('callInput');
+const answerButton = document.getElementById('answerButton');
+const remoteVideo = document.getElementById('remoteVideo');
+const hangupButton = document.getElementById('hangupButton');
+
+webcamButton.onclick = async () => {
+  localStream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
+  remoteStream = new MediaStream();
+
+  localStream.getTracks().forEach((track) => {
+    pc.addTrack(track, localStream);
+  });
+
+  pc.ontrack = (event) => {
+    event.streams[0].getTracks().forEach((track) => {
+      remoteStream.addTrack(track);
+    });
+  };
+
+  webcamVideo.srcObject = localStream;
+  remoteVideo.srcObject = remoteStream;
+
+  callButton.disabled = false;
+  answerButton.disabled = false;
+  webcamButton.disabled = true;
+};
+
+callButton.onclick = async () => {
+  pc.onicecandidate = (event) => {
+    event.candidate && sendIceCandidateToFirebase(event.candidate);
+  };
+
+  const offerDescription = await pc.createOffer();
+  await pc.setLocalDescription(offerDescription);
+
+  const offer = {
+    sdp: offerDescription.sdp,
+    type: offerDescription.type,
+  };
+
+  sendOfferToFirebase(offer);
+  //waitForAnswer();
+};
+
+answerButton.onclick = async () => {
+  pc.onicecandidate = (event) => {
+    event.candidate && sendIceCandidateToFirebase(event.candidate);
+  };
+
+  const offerDescription = await getOfferFromFirebase();
+  await pc.setRemoteDescription(new RTCSessionDescription(offerDescription));
+
+  const answerDescription = await pc.createAnswer();
+  await pc.setLocalDescription(answerDescription);
+
+  const answer = {
+    type: answerDescription.type,
+    sdp: answerDescription.sdp,
+  };
+
+  sendAnswerToFirebase(answer);
+};
+
+function sendIceCandidateToFirebase(candidate) {
+  fetch(`${apiUrl}/candidate`, {
+    method: 'POST',
+    body: JSON.stringify(candidate),
+    headers: {
+      'Content-Type': 'application/json',
+    },
+  });
+}
+
+function sendOfferToFirebase(offer) {
+  fetch(`${apiUrl}/offer`, {
+    method: 'POST',
+    body: JSON.stringify(offer),
+    headers: {
+      'Content-Type': 'application/json',
+    },
+  });
+}
+
+async function getOfferFromFirebase() {
+  const response = await fetch(`${apiUrl}/offer`);
+  const offer = await response.json();
+  return offer;
+}
+
+function sendAnswerToFirebase(answer) {
+  fetch(`${apiUrl}/answer`, {
+    method: 'POST',
+    body: JSON.stringify(answer),
+    headers: {
+      'Content-Type': 'application/json',
+    },
+  });
+}
+
+async function waitForAnswer() {
+  const response = await fetch(`${apiUrl}/answer`);
+  const answer = await response.json();
+  await pc.setRemoteDescription(new RTCSessionDescription(answer));
+}
+
+</script>
