@@ -167,13 +167,15 @@ async function waitForAnswer() {
       answerDescription = new RTCSessionDescription({ type: 'answer', sdp: '' });
     }
 
-    await pc.setRemoteDescription(answerDescription);
+    pc.setRemoteDescription(answerDescription);
 
     pc.ontrack = (event) => {
     event.streams[0].getTracks().forEach((track) => {
       remoteStream.addTrack(track);
     });
 
+    alert("stream" + remoteStream);
+    console.log(remoteStream);
     remoteVideo.srcObject = remoteStream;
   };
 }
